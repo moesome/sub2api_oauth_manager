@@ -71,7 +71,7 @@
     .connection small { margin-top: 1px; color: var(--muted); font-size: 11px; }
 
     .panel { background: rgba(255, 255, 255, .94); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
-    .summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
+    .summary { display: grid; grid-template-columns: 1fr; gap: 14px; margin-bottom: 18px; }
     .metric {
       display: flex; align-items: center; gap: 12px; min-height: 92px; padding: 17px 18px;
       background: rgba(255, 255, 255, .86); border: 1px solid var(--line); border-radius: 16px;
@@ -80,17 +80,53 @@
     .metric-icon { display: grid; width: 38px; height: 38px; flex: 0 0 38px; place-items: center; border-radius: 11px; }
     .metric-icon svg { width: 19px; height: 19px; }
     .metric:nth-child(1) .metric-icon { color: #5965d8; background: var(--primary-soft); }
-    .metric:nth-child(2) .metric-icon { color: #7d57c8; background: #f1ebff; }
-    .metric:nth-child(3) .metric-icon { color: var(--success); background: var(--success-soft); }
-    .metric:nth-child(4) .metric-icon { color: var(--warning); background: var(--warning-soft); }
     .metric-label, .metric-note { display: block; }
     .metric-label { color: var(--muted); font-size: 12px; font-weight: 600; }
     .metric-value { display: block; margin-top: 1px; color: var(--text); font-size: 23px; font-weight: 760; line-height: 1.15; }
     .metric-note { margin-top: 2px; color: var(--subtle); font-size: 11px; }
     .metric-action { flex: 0 0 auto; margin-left: auto; padding: 7px 9px; color: var(--primary-dark); background: var(--primary-soft); border-color: #c9cdf8; font-size: 11px; font-weight: 700; white-space: nowrap; }
     .metric-action:hover:not(:disabled) { color: #fff; background: var(--primary); border-color: var(--primary); }
+    .connection-action { flex: 0 0 auto; margin-left: auto; padding: 7px 10px; color: var(--primary-dark); background: var(--primary-soft); border-color: #c9cdf8; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .connection-action:hover:not(:disabled) { color: #fff; background: var(--primary); border-color: var(--primary); }
 
-    .assign { display: flex; align-items: center; justify-content: space-between; gap: 18px; min-height: 74px; margin-bottom: 22px; padding: 14px 18px; }
+    .proxy-summary { grid-column: 1 / -1; display: block; padding: 18px 20px 20px; }
+    .proxy-summary-head { display: flex; align-items: center; gap: 12px; }
+    .proxy-summary-head .metric-icon { flex: 0 0 38px; }
+    .proxy-summary-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(285px, 1fr)); gap: 12px; margin-top: 16px; }
+    .proxy-summary-item { min-width: 0; padding: 13px; background: linear-gradient(180deg, #fff, #fbfcff); border: 1px solid var(--line); border-radius: 13px; }
+    .proxy-summary-item-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; min-width: 0; }
+    .proxy-summary-item-name { display: flex; align-items: center; gap: 7px; min-width: 0; }
+    .proxy-summary-item-name strong { overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+    .proxy-summary-item-meta { margin: 3px 0 0 16px; color: var(--subtle); font-size: 10px; }
+    .proxy-summary-metrics { display: grid; grid-template-columns: minmax(110px, .9fr) minmax(55px, .45fr); gap: 12px; margin-top: 13px; }
+    .proxy-summary-metric-label { display: block; color: var(--subtle); font-size: 10px; }
+    .proxy-summary-latency strong, .proxy-summary-account-count strong { display: block; margin-top: 2px; color: var(--text); font-size: 14px; font-weight: 750; line-height: 1.2; }
+    .proxy-summary-latency.good strong { color: var(--success); }
+    .proxy-summary-latency.warn strong { color: var(--warning); }
+    .proxy-summary-latency.bad strong { color: var(--danger); }
+    .proxy-summary-latency small { display: block; overflow: hidden; margin-top: 3px; color: var(--subtle); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+    .proxy-summary-token { grid-column: 1 / -1; min-width: 0; padding-top: 10px; border-top: 1px solid var(--line); }
+    .proxy-summary-token-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+    .proxy-summary-token-head strong { color: var(--muted); font-size: 10px; font-weight: 700; }
+    .proxy-summary-token-head small { color: var(--subtle); font-size: 9px; }
+    .proxy-summary-chart-wrap { min-width: 0; margin-top: 7px; }
+    .proxy-summary-chart-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; color: var(--muted); font-size: 10px; }
+    .proxy-summary-chart-legend-item { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+    .proxy-summary-chart-swatch { width: 16px; height: 2px; border-radius: 2px; }
+    .proxy-summary-chart-swatch.average { background: #5865d9; }
+    .proxy-summary-chart-swatch.p95 { background: #c77b15; }
+    .proxy-summary-chart-swatch.p99 { background: #d34f5f; }
+    .proxy-summary-chart { display: block; width: 100%; margin-top: 3px; overflow: visible; }
+    .proxy-summary-chart-grid { stroke: #edf0f4; stroke-width: 1; }
+    .proxy-summary-chart-axis { stroke: #cfd6e2; stroke-width: 1; }
+    .proxy-summary-chart-label, .proxy-summary-chart-axis-title { fill: var(--subtle); font-family: inherit; font-size: 9px; }
+    .proxy-summary-chart-axis-title { fill: var(--muted); font-size: 9px; }
+    .proxy-summary-chart-path { fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
+    .proxy-summary-chart-empty { min-height: 118px; display: grid; place-items: center; padding: 14px; color: var(--subtle); background: var(--surface-soft); border-radius: 8px; font-size: 11px; text-align: center; }
+    .proxy-summary-empty { grid-column: 1 / -1; padding: 10px 0 2px; color: var(--subtle); font-size: 12px; }
+
+    .assign { margin-bottom: 22px; padding: 0 18px 18px; }
+    .assign-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 18px; min-height: 74px; }
     .assign-copy, .assign-controls { display: flex; align-items: center; gap: 11px; }
     .assign-copy { min-width: 0; }
     .assign-copy strong { white-space: nowrap; }
@@ -132,10 +168,6 @@
     .quick-card-head > div:first-child { min-width: 0; }
     .quick-card-title { min-width: 0; overflow: hidden; color: var(--text); font-size: 13px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
     .quick-card-meta { margin-top: 2px; color: var(--subtle); font-size: 10px; }
-    .quick-card-status { flex: 0 0 auto; min-height: 20px; padding: 2px 6px; font-size: 10px; }
-    .quick-card-status.good { color: var(--success); background: var(--success-soft); }
-    .quick-card-status.warn { color: var(--warning); background: var(--warning-soft); }
-    .quick-card-status.bad { color: var(--danger); background: var(--danger-soft); }
     .quick-account-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; }
     .quick-account { position: relative; display: grid; width: 100%; aspect-ratio: 1; place-items: center; min-width: 0; padding: 2px; overflow: hidden; color: #667085; background: var(--gray-soft); border: 1px solid #e0e4ea; border-radius: 7px; box-shadow: none; transition: .18s ease; }
     .quick-account:hover:not(:disabled) { color: #59656f; background: #e8ebef; border-color: #cbd2dd; transform: translateY(-1px); }
@@ -149,67 +181,58 @@
     .quick-account-percent { min-width: 0; max-width: 100%; padding: 0 1px; font-size: 10px; font-weight: 760; line-height: 1.1; white-space: nowrap; }
     .quick-card-empty { grid-column: 1 / -1; padding: 12px 4px 10px; color: var(--subtle); font-size: 11px; }
 
-    #list { display: grid; gap: 18px; }
+    #list { display: grid; gap: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
     #list.loading { opacity: .72; pointer-events: none; }
     .proxy { overflow: hidden; transition: box-shadow .2s ease, transform .2s ease; }
     .proxy:hover { box-shadow: var(--shadow-hover); }
-    .proxy-head { display: grid; grid-template-columns: minmax(220px, 1fr) auto auto auto; align-items: center; gap: 18px; padding: 18px 20px; background: linear-gradient(180deg, #fff, #fcfdff); border-bottom: 1px solid var(--line); }
+    .proxy-head { display: grid; grid-template-columns: minmax(220px, 1fr) auto; align-items: center; gap: 12px; padding: 12px 15px; background: linear-gradient(180deg, #fff, #fcfdff); border-bottom: 1px solid var(--line); }
     .proxy-head.unbound { grid-template-columns: minmax(220px, 1fr) auto; }
     .proxy-head.unbound .proxy-count { grid-column: 2; grid-row: 1; }
     .proxy-heading { min-width: 0; }
-    .proxy-name-line { display: flex; align-items: center; gap: 9px; min-width: 0; }
+    .proxy-name-line { display: flex; align-items: center; gap: 7px; min-width: 0; }
     .proxy-dot { width: 9px; height: 9px; flex: 0 0 9px; background: var(--success); border-radius: 50%; }
     .proxy-dot.inactive, .proxy-dot.expired { background: var(--subtle); }
     .proxy-dot.error { background: var(--danger); }
-    .proxy-name { overflow: hidden; font-size: 16px; font-weight: 720; text-overflow: ellipsis; white-space: nowrap; }
-    .meta { color: var(--muted); font-size: 12px; }
-    .proxy-meta { margin-top: 3px; padding-left: 18px; }
-    .proxy-status, .badge { display: inline-flex; align-items: center; justify-content: center; min-height: 25px; padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 650; white-space: nowrap; }
+    .proxy-name { overflow: hidden; font-size: 14px; font-weight: 720; text-overflow: ellipsis; white-space: nowrap; }
+    .meta { color: var(--muted); font-size: 11px; }
+    .proxy-meta { margin-top: 2px; padding-left: 16px; }
+    .proxy-status, .badge { display: inline-flex; align-items: center; justify-content: center; min-height: 19px; padding: 2px 6px; border-radius: 999px; font-size: 9px; font-weight: 650; white-space: nowrap; }
     .proxy-status.active, .badge.active, .badge.normal { color: var(--success); background: var(--success-soft); }
     .proxy-status.inactive, .proxy-status.expired, .badge.inactive, .badge.expired, .badge.paused, .badge.unknown { color: #667085; background: var(--gray-soft); }
     .proxy-status.error, .badge.error { color: var(--danger); background: var(--danger-soft); }
     .badge.rate-limited, .badge.overloaded, .badge.temp-unschedulable { color: var(--warning); background: var(--warning-soft); }
-    .proxy-latency { min-width: 112px; color: var(--muted); font-size: 12px; text-align: right; white-space: nowrap; }
-    .proxy-latency strong, .proxy-latency small { display: block; }
-    .proxy-latency strong { font-size: 12px; font-weight: 700; }
-    .proxy-latency small { overflow: hidden; margin-top: 2px; color: var(--subtle); font-size: 10px; font-weight: 500; text-overflow: ellipsis; }
-    .proxy-latency.good { color: var(--success); }
-    .proxy-latency.warn { color: var(--warning); }
-    .proxy-latency.bad { color: var(--danger); }
-    .proxy-count { min-width: 72px; text-align: center; }
-    .count { display: block; font-size: 19px; font-weight: 760; line-height: 1.1; }
-    .proxy-action { min-width: 82px; }
+    .proxy-count { min-width: 56px; text-align: center; }
+    .count { display: block; font-size: 17px; font-weight: 760; line-height: 1.1; }
 
-    .accounts { padding: 0 20px 6px; }
-    .account-head, .account { display: grid; grid-template-columns: 30px minmax(180px, 1.25fr) minmax(145px, .9fr) minmax(110px, .7fr) minmax(140px, .85fr) minmax(230px, 1.4fr); align-items: center; gap: 13px; }
-    .account-head { min-height: 42px; color: var(--subtle); font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
-    .account { min-height: 73px; border-top: 1px solid #edf0f4; }
-    .account:hover { background: linear-gradient(90deg, transparent, #fbfcff 8%, #fbfcff 92%, transparent); }
-    .account-check { width: 16px; height: 16px; margin: 0 auto; accent-color: var(--primary); }
+    .accounts { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; padding: 8px 10px 10px; }
+    .account { position: relative; display: grid; grid-template-rows: auto auto auto auto; align-content: start; gap: 5px; min-width: 0; min-height: 132px; padding: 8px; overflow: hidden; color: var(--text); background: linear-gradient(180deg, #fff, #fbfcff); border: 1px solid var(--line); border-radius: 10px; cursor: pointer; aspect-ratio: 1.08; transition: .18s ease; }
+    .account:hover { border-color: #b8bef4; background: linear-gradient(180deg, #fff, #f8f9ff); box-shadow: 0 5px 14px rgba(38, 52, 77, .08); transform: translateY(-1px); }
+    .account.selected { border-color: var(--primary); background: linear-gradient(180deg, #f8f9ff, #eef0ff); box-shadow: 0 0 0 2px rgba(88, 101, 217, .12); }
+    .account:focus-within { outline: 3px solid rgba(88, 101, 217, .14); outline-offset: 1px; }
+    .account-check { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; white-space: nowrap; border: 0; opacity: 0; clip: rect(0 0 0 0); clip-path: inset(50%); }
+    .account-tile-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 5px; min-width: 0; }
     .account-main { min-width: 0; }
-    .account-name { overflow: hidden; color: var(--text); font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
-    .account-id { margin-left: 5px; color: var(--subtle); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 11px; font-weight: 500; }
-    .account-detail { overflow: hidden; margin-top: 2px; color: var(--subtle); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .account-name { overflow: hidden; color: var(--text); font-size: 11px; font-weight: 700; line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; }
+    .account-id { margin-left: 3px; color: var(--subtle); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 9px; font-weight: 500; }
+    .account-detail { overflow: hidden; margin-top: 1px; color: var(--subtle); font-size: 9px; line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; }
+    .account-select-mark { display: grid; width: 16px; height: 16px; flex: 0 0 16px; place-items: center; color: transparent; background: #fff; border: 1px solid var(--line-strong); border-radius: 5px; font-size: 11px; font-weight: 800; line-height: 1; }
+    .account.selected .account-select-mark { color: #fff; background: var(--primary); border-color: var(--primary); }
     .group-cell { min-width: 0; }
-    .account-groups { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; max-height: 42px; overflow: hidden; }
-    .account-group { display: inline-flex; max-width: 100%; padding: 3px 7px; overflow: hidden; color: #5d4ca1; background: #f2efff; border: 1px solid #e5e0ff; border-radius: 6px; font-size: 11px; line-height: 1.25; text-overflow: ellipsis; white-space: nowrap; }
-    .account-groups-empty { color: var(--subtle); font-size: 11px; }
+    .account-groups { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; max-height: 30px; overflow: hidden; }
+    .account-group { display: inline-flex; max-width: 100%; padding: 1px 4px; overflow: hidden; color: #5d4ca1; background: #f2efff; border: 1px solid #e5e0ff; border-radius: 4px; font-size: 9px; line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; }
+    .account-groups-empty { color: var(--subtle); font-size: 9px; }
+    .account-state-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 5px; min-width: 0; }
     .status-cell, .schedule-cell { min-width: 0; }
-    .status-cell small { display: block; overflow: hidden; margin-top: 3px; color: var(--subtle); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
-    .schedule-button { display: inline-flex; align-items: center; gap: 8px; padding: 0; color: var(--muted); background: transparent; border: 0; box-shadow: none; }
-    .schedule-button:hover:not(:disabled) { color: var(--primary-dark); background: transparent; border-color: transparent; }
-    .switch { display: inline-flex; width: 37px; height: 21px; padding: 3px; align-items: center; background: #cbd2dd; border: 0; border-radius: 20px; transition: .18s ease; }
-    .switch i { display: block; width: 15px; height: 15px; background: #fff; border-radius: 50%; box-shadow: 0 1px 3px rgba(24, 32, 48, .22); transition: .18s ease; }
-    .switch.on { background: #54c19b; }
-    .switch.on i { transform: translateX(16px); }
-    .schedule-label { font-size: 12px; white-space: nowrap; }
-    .schedule-label.on { color: var(--success); font-weight: 650; }
-    .usage { min-width: 0; }
-    .usage-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 11px; }
-    .usage-top strong { color: var(--text); font-size: 12px; font-weight: 700; }
-    .usage-bar { height: 6px; margin-top: 6px; overflow: hidden; background: #edf0f5; border-radius: 999px; }
-    .usage-bar b { display: block; height: 100%; background: linear-gradient(90deg, #63cda5, #4eae90); border-radius: inherit; }
-    .usage-note { display: block; overflow: hidden; margin-top: 4px; color: var(--subtle); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+    .status-cell small { display: -webkit-box; overflow: hidden; margin-top: 2px; color: var(--subtle); font-size: 9px; line-height: 1.2; text-overflow: ellipsis; -webkit-box-orient: vertical; -webkit-line-clamp: 1; }
+    .usage { display: flex; align-items: center; gap: 6px; min-width: 0; }
+    .usage-ring { position: relative; display: grid; width: 32px; height: 32px; flex: 0 0 32px; place-items: center; background: conic-gradient(var(--usage-color, var(--success)) var(--usage-percent, 0%), #edf0f5 0); border-radius: 50%; }
+    .usage-ring::before { position: absolute; width: 24px; height: 24px; content: ''; background: #fff; border-radius: 50%; }
+    .usage-ring strong { position: relative; z-index: 1; color: var(--text); font-size: 8px; font-weight: 750; line-height: 1; }
+    .usage-copy { display: grid; min-width: 0; gap: 1px; }
+    .usage-copy strong { overflow: hidden; color: var(--muted); font-size: 9px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+    .usage-copy small { overflow: hidden; color: var(--subtle); font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+    .usage-empty .usage-ring { --usage-color: #cbd2dd; }
+    .accounts > .empty { grid-column: 1 / -1; padding: 20px 12px; font-size: 12px; }
     .empty, .loading-state { padding: 42px 24px; color: var(--muted); text-align: center; }
     .loading-state { border: 1px dashed var(--line-strong); border-radius: 16px; }
     .empty strong, .loading-state strong { display: block; margin-bottom: 4px; color: var(--text); }
@@ -252,15 +275,9 @@
     .quick-add-compact-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; }
 
     @media (max-width: 980px) {
-      .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .quick-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .proxy-head { grid-template-columns: minmax(190px, 1fr) auto auto; }
-      .proxy-action { grid-column: 1 / -1; }
-      .proxy-action button { width: 100%; }
-      .account-head, .account { grid-template-columns: 26px minmax(150px, 1.2fr) minmax(125px, .95fr) minmax(105px, .8fr) minmax(125px, .9fr); }
-      .account-head span:last-child, .account .usage { grid-column: 2 / -1; }
-      .account .usage { padding: 0 0 12px; }
-      .account { min-height: 93px; padding-top: 12px; }
+      .accounts { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+      .account { min-height: 126px; }
     }
     @media (max-width: 680px) {
       .wrap { width: min(100% - 24px, 1480px); padding-top: 22px; }
@@ -271,8 +288,11 @@
       .metric-icon { width: 32px; height: 32px; flex-basis: 32px; }
       .metric-icon svg { width: 16px; height: 16px; }
       .metric-value { font-size: 19px; }
-      .metric-action { padding: 6px 7px; font-size: 10px; }
-      .assign { align-items: stretch; flex-direction: column; gap: 11px; padding: 14px; }
+      .metric-action, .connection-action { padding: 6px 7px; font-size: 10px; }
+      .proxy-summary { padding: 14px; }
+      .proxy-summary-list { grid-template-columns: 1fr; }
+      .assign { padding: 0 14px 14px; }
+      .assign-toolbar { align-items: stretch; flex-direction: column; gap: 11px; padding: 14px 0; }
       .assign-copy, .assign-controls { justify-content: space-between; }
       .assign-controls { flex-wrap: wrap; }
       .assign-controls select { flex: 1; min-width: 0; }
@@ -283,18 +303,12 @@
       .quick-selected { align-self: flex-start; }
       .quick-filter-row { flex-direction: column; gap: 7px; }
       .quick-filter-label { padding-top: 0; }
-      .proxy-head { grid-template-columns: 1fr auto; gap: 12px; padding: 15px; }
-      .proxy-latency { grid-column: 1; text-align: left; }
-      .proxy-count { grid-column: 2; grid-row: 2; }
-      .proxy-action { grid-column: 1 / -1; }
-      .accounts { padding: 0 14px 4px; }
-      .account-head { display: none; }
-      .account { grid-template-columns: 24px minmax(0, 1fr) auto; gap: 9px; min-height: 0; padding: 14px 0; }
-      .account .status-cell { grid-column: 3; grid-row: 1; }
-      .account .group-cell { grid-column: 2 / -1; }
-      .account .schedule-cell { grid-column: 2 / -1; }
-      .account .usage { grid-column: 2 / -1; padding: 0; }
-      .status-cell small { max-width: 100px; }
+      .proxy-head { gap: 10px; padding: 11px 12px; }
+      .accounts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; padding: 6px 8px 8px; }
+      .account { min-height: 122px; padding: 7px; gap: 4px; aspect-ratio: 1.02; }
+      .account-name { font-size: 10px; }
+      .account-detail, .account-group, .account-groups-empty, .status-cell small { font-size: 8px; }
+      .account-state-row { gap: 3px; }
       .quick-add-grid { grid-template-columns: 1fr; }
       .quick-add-compact-grid { grid-template-columns: 1fr; }
       .modal-backdrop { padding: 12px; }
@@ -326,34 +340,21 @@
           <strong id="connectionText">检查登录状态</strong>
           <small>复用 Sub2API 同源登录态</small>
         </div>
+        <button class="connection-action" id="quickAddButton" type="button" disabled>新增账号</button>
       </div>
     </header>
 
     <section class="summary" aria-label="概览">
-      <div class="metric">
-        <div class="metric-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M7 9h.01M11 9h6M7 13h10"></path></svg>
+      <div class="metric proxy-summary" id="proxySummary">
+        <div class="proxy-summary-head">
+          <div class="metric-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M7 9h.01M11 9h6M7 13h10"></path></svg>
+          </div>
+          <div><span class="metric-label">代理</span><strong class="metric-value" id="proxyCount">—</strong><span class="metric-note">按接口返回顺序展示</span></div>
         </div>
-        <div><span class="metric-label">代理</span><strong class="metric-value" id="proxyCount">—</strong><span class="metric-note">已配置代理</span></div>
-      </div>
-      <div class="metric">
-        <div class="metric-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"></circle><path d="M3.5 19c.7-3 2.5-4.5 5.5-4.5s4.8 1.5 5.5 4.5M16 11a2.5 2.5 0 1 0 0-5M16 14.5c2.4 0 3.9 1.2 4.5 3.5"></path></svg>
+        <div class="proxy-summary-list" id="proxySummaryList" aria-live="polite">
+          <span class="proxy-summary-empty">正在加载代理…</span>
         </div>
-        <div><span class="metric-label">OAuth 账号</span><strong class="metric-value" id="accountCount">—</strong><span class="metric-note">OpenAI OAuth</span></div>
-        <button class="metric-action" id="quickAddButton" type="button" disabled>快速添加</button>
-      </div>
-      <div class="metric">
-        <div class="metric-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4.2 4.2L19 6.5"></path><circle cx="12" cy="12" r="9"></circle></svg>
-        </div>
-        <div><span class="metric-label">调度中</span><strong class="metric-value" id="scheduledCount">—</strong><span class="metric-note">参与账号调度</span></div>
-      </div>
-      <div class="metric">
-        <div class="metric-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2.8 19h18.4L12 3Z"></path><path d="M12 9v4.5M12 17h.01"></path></svg>
-        </div>
-        <div><span class="metric-label">需要关注</span><strong class="metric-value" id="attentionCount">—</strong><span class="metric-note">错误、限流或异常</span></div>
       </div>
     </section>
 
@@ -377,24 +378,25 @@
       </div>
     </section>
 
-    <section class="panel assign">
-      <div class="assign-copy">
-        <span class="section-kicker">批量操作</span>
-        <strong>移动选中的账号</strong>
-        <span id="selected" class="selected">已选 0 个账号</span>
+    <section class="panel assign" aria-label="批量操作">
+      <div class="assign-toolbar">
+        <div class="assign-copy">
+          <span class="section-kicker">批量操作</span>
+          <strong>移动选中的账号</strong>
+          <span id="selected" class="selected">已选 0 个账号</span>
+        </div>
+        <div class="assign-controls">
+          <select id="target" aria-label="选择目标代理">
+            <option value="">选择目标代理…</option>
+          </select>
+          <button class="primary" id="move" type="button" disabled>移动账号</button>
+          <span id="status" class="status" role="status"></span>
+        </div>
       </div>
-      <div class="assign-controls">
-        <select id="target" aria-label="选择目标代理">
-          <option value="">选择目标代理…</option>
-        </select>
-        <button class="primary" id="move" type="button" disabled>移动账号</button>
-        <span id="status" class="status" role="status"></span>
+      <div id="list" aria-live="polite">
+        <div class="loading-state">正在加载代理和账号…</div>
       </div>
     </section>
-
-    <div id="list" aria-live="polite">
-      <div class="loading-state">正在加载代理和账号…</div>
-    </div>
   </main>
 
   <div class="modal-backdrop" id="quickAddModal" hidden aria-hidden="true">
@@ -478,6 +480,7 @@
         groups: [],
         accounts: [],
         latency: {},
+        firstToken: { metrics: {}, loading: false, error: '' },
         selected: new Set(),
         quickGroupIDs: new Set(),
         quickGroupsInitialized: false,
@@ -598,6 +601,8 @@
       const arrayFrom = (value) => {
         if (Array.isArray(value)) return value;
         if (value && Array.isArray(value.items)) return value.items;
+        if (value && Array.isArray(value.requests)) return value.requests;
+        if (value && value.data && value.data !== value) return arrayFrom(value.data);
         return [];
       };
 
@@ -624,8 +629,12 @@
         return proxy.name || proxy.host || ('代理 #' + proxyId(proxy));
       }
 
+      function accountEmail(account) {
+        return String(account.email || account.account_email || account.user_email || account.account?.email || account.user?.email || account.credentials?.email || '').trim();
+      }
+
       function accountName(account) {
-        return account.name || account.email || account.account || ('账号 #' + account.id);
+        return account.name || accountEmail(account) || account.account || ('账号 #' + account.id);
       }
 
       function groupId(group) {
@@ -756,6 +765,295 @@
         return { main, detail };
       }
 
+      const firstTokenBucketDuration = 15 * 60 * 1000;
+      const firstTokenBucketCount = 96;
+      const firstTokenChartSeries = [
+        { key: 'average', label: '平均值', color: '#5865d9' },
+        { key: 'p95', label: 'P95', color: '#c77b15' },
+        { key: 'p99', label: 'P99', color: '#d34f5f' }
+      ];
+
+      function timestampMs(value) {
+        if (value == null || value === '') return null;
+        const numeric = Number(value);
+        if (Number.isFinite(numeric)) return Math.abs(numeric) < 100000000000 ? numeric * 1000 : numeric;
+        const timestamp = new Date(value).getTime();
+        return Number.isFinite(timestamp) ? timestamp : null;
+      }
+
+      function requestAccountID(request) {
+        return request?.account_id ?? request?.accountId ?? request?.account?.id;
+      }
+
+      function requestProxyID(request) {
+        return request?.proxy_id ?? request?.proxyId ?? request?.proxy?.id ?? request?.account?.proxy_id ?? request?.account?.proxyId ?? request?.account?.proxy?.id;
+      }
+
+      function requestCreatedAt(request) {
+        return request?.created_at ?? request?.createdAt ?? request?.started_at ?? request?.startedAt ?? request?.timestamp;
+      }
+
+      function requestFirstTokenMs(request) {
+        const value = Number(request?.first_token_ms ?? request?.firstTokenMs ?? request?.time_to_first_token_ms ?? request?.timeToFirstTokenMs ?? request?.ttft_ms ?? request?.ttftMs);
+        return Number.isFinite(value) && value >= 0 ? value : null;
+      }
+
+      function percentile(values, ratio) {
+        if (!values.length) return null;
+        const sorted = [...values].sort((left, right) => left - right);
+        const position = (sorted.length - 1) * ratio;
+        const lower = Math.floor(position);
+        const upper = Math.ceil(position);
+        if (lower === upper) return sorted[lower];
+        return sorted[lower] + (sorted[upper] - sorted[lower]) * (position - lower);
+      }
+
+      function firstTokenStats(values) {
+        if (!values.length) return { count: 0, average: null, p95: null, p99: null };
+        return {
+          count: values.length,
+          average: values.reduce((sum, value) => sum + value, 0) / values.length,
+          p95: percentile(values, .95),
+          p99: percentile(values, .99)
+        };
+      }
+
+      function aggregateFirstTokenMetrics(requests) {
+        const oauthAccountIDs = new Set(state.accounts
+          .map((account) => account.id)
+          .filter((id) => id != null)
+          .map((id) => String(id)));
+        const accountProxyIDs = new Map(state.accounts
+          .filter((account) => account.id != null && account.proxy_id != null)
+          .map((account) => [String(account.id), String(account.proxy_id)]));
+        const knownProxyIDs = new Set(state.proxies
+          .map((proxy) => proxyId(proxy))
+          .filter((id) => id != null)
+          .map((id) => String(id)));
+        const rangeEnd = Date.now();
+        const currentBucketStart = Math.floor(rangeEnd / firstTokenBucketDuration) * firstTokenBucketDuration;
+        const rangeStart = currentBucketStart - firstTokenBucketDuration * (firstTokenBucketCount - 1);
+        const samples = new Map([...knownProxyIDs].map((id) => [id, Array.from({ length: firstTokenBucketCount }, () => [])]));
+
+        requests.forEach((request) => {
+          const firstToken = requestFirstTokenMs(request);
+          const createdAt = timestampMs(requestCreatedAt(request));
+          if (firstToken == null || createdAt == null) return;
+          if (createdAt < rangeStart || createdAt > rangeEnd) return;
+
+          const directProxyID = requestProxyID(request);
+          const accountID = requestAccountID(request);
+          if (accountID == null || !oauthAccountIDs.has(String(accountID))) return;
+          const proxyID = directProxyID != null ? String(directProxyID) : accountProxyIDs.get(String(accountID));
+          const proxySamples = samples.get(proxyID);
+          if (!proxySamples) return;
+
+          const bucketIndex = Math.min(
+            firstTokenBucketCount - 1,
+            Math.floor((createdAt - rangeStart) / firstTokenBucketDuration)
+          );
+          if (bucketIndex >= 0) proxySamples[bucketIndex].push(firstToken);
+        });
+
+        return Object.fromEntries([...samples].map(([proxyID, buckets]) => [
+          proxyID,
+          buckets.map((values, index) => ({
+            start: rangeStart + index * firstTokenBucketDuration,
+            ...firstTokenStats(values)
+          }))
+        ]));
+      }
+
+      function formatFirstTokenMs(value) {
+        const number = Number(value);
+        if (!Number.isFinite(number)) return '—';
+        const seconds = number / 1000;
+        const precision = seconds >= 10 ? 1 : 2;
+        return seconds.toFixed(precision).replace(/\.?0+$/, '') + 's';
+      }
+
+      function formatFirstTokenHour(value) {
+        const date = new Date(value);
+        if (!Number.isFinite(date.getTime())) return '';
+        return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', hour12: false });
+      }
+
+      function svgNumber(value) {
+        return Number(value.toFixed(2));
+      }
+
+      function firstTokenMetricValue(bucket, key) {
+        const raw = bucket?.[key];
+        if (raw == null || raw === '') return null;
+        const value = Number(raw);
+        return Number.isFinite(value) && value >= 0 ? value : null;
+      }
+
+      // 高斯低通平滑核：radius 越大越平滑（也越抹平真实波峰）。
+      // radius=6 → 13 点窗口，15 分钟桶下有效跨度约 ±90 分钟，足以压掉逐桶抖动。
+      // 想更顺就调大 radius，想更保真就调小。
+      const firstTokenSmoothingRadius = 6;
+
+      const firstTokenSmoothingWeights = (() => {
+        const sigma = Math.max(firstTokenSmoothingRadius / 2, .5);
+        return Array.from({ length: firstTokenSmoothingRadius * 2 + 1 }, (_, index) => {
+          const distance = index - firstTokenSmoothingRadius;
+          return Math.exp(-(distance * distance) / (2 * sigma * sigma));
+        });
+      })();
+
+      function firstTokenSmoothedValues(buckets, key) {
+        const radius = Math.floor(firstTokenSmoothingWeights.length / 2);
+        return buckets.map((bucket, index) => {
+          if (firstTokenMetricValue(bucket, key) == null) return null;
+          let weightedTotal = 0;
+          let weightTotal = 0;
+          for (let offset = -radius; offset <= radius; offset += 1) {
+            const neighbor = buckets[index + offset];
+            const value = firstTokenMetricValue(neighbor, key);
+            if (value == null) continue;
+            const weight = firstTokenSmoothingWeights[offset + radius];
+            weightedTotal += value * weight;
+            weightTotal += weight;
+          }
+          return weightTotal ? weightedTotal / weightTotal : null;
+        });
+      }
+
+      // 圆角样条：切线用 Catmull-Rom（相邻点的中心差分斜率 dy/dx），峰顶做成圆弧不再尖。
+      // 关键：控制点的 x 一律固定在每段的 1/3、2/3 处，只有 y 跟随切线，
+      // 因此曲线永远沿时间向前，不会因缺口(空桶)导致的非均匀间距而“回头转折”。
+      function firstTokenSmoothPath(points, bounds) {
+        if (!points.length) return '';
+        const pointText = (point) => svgNumber(point.x) + ' ' + svgNumber(point.y);
+        if (points.length === 1) return 'M ' + pointText(points[0]);
+
+        const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+        const tangents = points.map((point, index) => {
+          const previous = points[index - 1];
+          const next = points[index + 1];
+          if (!previous) return next ? (next.y - point.y) / ((next.x - point.x) || 1) : 0;
+          if (!next) return (point.y - previous.y) / ((point.x - previous.x) || 1);
+          const span = next.x - previous.x;
+          return span ? (next.y - previous.y) / span : 0;
+        });
+        const commands = ['M ' + pointText(points[0])];
+        for (let index = 0; index < points.length - 1; index += 1) {
+          const current = points[index];
+          const next = points[index + 1];
+          const distance = next.x - current.x;
+          const firstControl = {
+            x: current.x + distance / 3,
+            y: clamp(current.y + tangents[index] * distance / 3, bounds.top, bounds.bottom)
+          };
+          const secondControl = {
+            x: next.x - distance / 3,
+            y: clamp(next.y - tangents[index + 1] * distance / 3, bounds.top, bounds.bottom)
+          };
+          commands.push('C ' + pointText(firstControl) + ', ' + pointText(secondControl) + ', ' + pointText(next));
+        }
+        return commands.join(' ');
+      }
+
+      // 全局统一的 Y 轴上限：取所有代理平滑后曲线的最大值，让每张图共用同一刻度，便于横向对比差异。
+      function firstTokenSharedYMax() {
+        let max = 0;
+        const metrics = state.firstToken.metrics || {};
+        Object.keys(metrics).forEach((proxyID) => {
+          const buckets = Array.isArray(metrics[proxyID]) ? metrics[proxyID] : [];
+          firstTokenChartSeries.forEach((series) => {
+            firstTokenSmoothedValues(buckets, series.key).forEach((value) => {
+              if (value != null && value > max) max = value;
+            });
+          });
+        });
+        return max > 0 ? max * 1.1 : 1000;
+      }
+
+      function firstTokenChartMarkup(proxyID) {
+        const buckets = Array.isArray(state.firstToken.metrics[String(proxyID)]) ? state.firstToken.metrics[String(proxyID)] : [];
+        const displaySeries = firstTokenChartSeries.map((series) => ({
+          ...series,
+          values: firstTokenSmoothedValues(buckets, series.key)
+        }));
+        const values = displaySeries.flatMap((series) => series.values
+          .filter((value) => value != null));
+        if (!values.length) return '<div class="proxy-summary-chart-empty">暂无 OAuth 首字样本</div>';
+
+        const chartWidth = 360;
+        const chartHeight = 200;
+        const plot = { left: 34, right: 354, top: 14, bottom: 166 };
+        const plotWidth = plot.right - plot.left;
+        const plotHeight = plot.bottom - plot.top;
+        const yMax = firstTokenSharedYMax();
+        const xPosition = (index) => plot.left + (buckets.length > 1 ? index / (buckets.length - 1) : .5) * plotWidth;
+        const yPosition = (value) => plot.bottom - (value / yMax) * plotHeight;
+        const yTicks = Array.from({ length: 5 }, (_, index) => {
+          const ratio = index / 4;
+          const value = yMax * (1 - ratio);
+          const y = plot.top + plotHeight * ratio;
+          return '<line class="proxy-summary-chart-grid" x1="' + plot.left + '" y1="' + svgNumber(y) + '" x2="' + plot.right + '" y2="' + svgNumber(y) + '"></line>' +
+            '<text class="proxy-summary-chart-label" x="' + (plot.left - 6) + '" y="' + svgNumber(y + 3) + '" text-anchor="end">' + escapeHTML(formatFirstTokenMs(value)) + '</text>';
+        }).join('');
+        const xTickIndexes = [...new Set(Array.from({ length: 7 }, (_, index) =>
+          Math.round(index * (buckets.length - 1) / 6)
+        ))].filter((index) => index >= 0 && index < buckets.length);
+        const xTicks = xTickIndexes.map((index) => {
+          const x = xPosition(index);
+          return '<text class="proxy-summary-chart-label" x="' + svgNumber(x) + '" y="181" text-anchor="middle">' + escapeHTML(formatFirstTokenHour(buckets[index].start)) + '</text>';
+        }).join('');
+        const seriesMarkup = displaySeries.map((series) => {
+          const points = series.values.map((value, index) => {
+            if (value == null) return null;
+            return { index, value, x: xPosition(index), y: yPosition(value) };
+          }).filter(Boolean);
+          const path = firstTokenSmoothPath(points, plot);
+          const pathMarkup = path ? '<path class="proxy-summary-chart-path" d="' + path + '" stroke="' + series.color + '"></path>' : '';
+          return pathMarkup;
+        }).join('');
+        const legend = firstTokenChartSeries.map((series) => '<span class="proxy-summary-chart-legend-item"><i class="proxy-summary-chart-swatch ' + series.key + '"></i>' + escapeHTML(series.label) + '</span>').join('');
+
+        return '<div class="proxy-summary-chart-wrap">' +
+          '<div class="proxy-summary-chart-legend" aria-label="图例">' + legend + '</div>' +
+          '<svg class="proxy-summary-chart" viewBox="0 0 ' + chartWidth + ' ' + chartHeight + '" role="img" aria-label="最近 24 小时首字耗时趋势图，每 15 分钟聚合，包含平均值、P95 和 P99">' +
+            yTicks +
+            '<line class="proxy-summary-chart-axis" x1="' + plot.left + '" y1="' + plot.top + '" x2="' + plot.left + '" y2="' + plot.bottom + '"></line>' +
+            '<line class="proxy-summary-chart-axis" x1="' + plot.left + '" y1="' + plot.bottom + '" x2="' + plot.right + '" y2="' + plot.bottom + '"></line>' +
+            xTicks +
+            '<text class="proxy-summary-chart-axis-title" transform="rotate(-90 10 90)" x="10" y="90" text-anchor="middle">首字耗时</text>' +
+            '<text class="proxy-summary-chart-axis-title" x="194" y="198" text-anchor="middle">时间</text>' +
+            seriesMarkup +
+          '</svg>' +
+        '</div>';
+      }
+
+      function firstTokenSummaryMarkup(proxyID) {
+        const stateNote = state.firstToken.loading ? '加载中…' : (state.firstToken.error ? '加载失败' : '仅 OAuth · 15 分钟平滑趋势');
+        const errorTitle = state.firstToken.error ? '首字统计不可用：' + state.firstToken.error : '';
+        const chartMarkup = state.firstToken.loading
+          ? '<div class="proxy-summary-chart-empty">正在加载首字数据…</div>'
+          : state.firstToken.error
+            ? '<div class="proxy-summary-chart-empty">首字统计不可用：' + escapeHTML(state.firstToken.error) + '</div>'
+            : firstTokenChartMarkup(proxyID);
+        return '<div class="proxy-summary-token"' + (errorTitle ? ' title="' + escapeHTML(errorTitle) + '"' : '') + '>' +
+          '<div class="proxy-summary-token-head"><strong>近期请求首字</strong><small>' + escapeHTML(stateNote) + '</small></div>' +
+          chartMarkup + '</div>';
+      }
+
+      async function loadFirstTokenMetrics() {
+        state.firstToken = { metrics: {}, loading: true, error: '' };
+        renderProxySummary();
+        try {
+          const requests = await allPages('/admin/ops/requests', { time_range: '24h', platform: 'openai', kind: 'all', sort: 'created_at_desc' });
+          state.firstToken.metrics = aggregateFirstTokenMetrics(requests);
+        } catch (error) {
+          state.firstToken.error = error.message || '请求记录加载失败';
+        } finally {
+          state.firstToken.loading = false;
+          renderProxySummary();
+        }
+      }
+
       async function testProxy(proxyID) {
         const key = String(proxyID);
         const samples = [];
@@ -808,17 +1106,17 @@
         const extra = account.extra || {};
         const percent = Number(extra.codex_7d_used_percent);
         if (!Number.isFinite(percent)) {
-          return '<div class="usage"><div class="usage-top"><strong>暂无快照</strong><span>7d 用量</span></div><span class="usage-note">暂无已保存用量数据</span></div>';
+          return '<div class="usage usage-empty" title="暂无已保存用量数据"><span class="usage-ring" aria-hidden="true"><strong>—</strong></span><span class="usage-copy"><strong>7d 用量</strong><small>暂无快照</small></span></div>';
         }
 
         const value = clampUsagePercent(percent);
         const resetAt = extra.codex_7d_reset_at ? formatDate(extra.codex_7d_reset_at) : '';
         const updatedAt = extra.codex_usage_updated_at ? formatDate(extra.codex_usage_updated_at) : '';
         const note = resetAt ? '重置 ' + resetAt : (updatedAt ? '更新 ' + updatedAt : '已保存快照');
+        const color = value >= 90 ? '#d34f5f' : (value >= 70 ? '#c77b15' : '#15966c');
         return '<div class="usage" title="' + escapeHTML((updatedAt ? '更新：' + updatedAt + '；' : '') + (resetAt ? '重置：' + resetAt : '')) + '">' +
-          '<div class="usage-top"><strong>' + formatUsagePercent(value) + '</strong><span>7d 已使用</span></div>' +
-          '<div class="usage-bar"><b style="width:' + value + '%"></b></div>' +
-          '<span class="usage-note">' + escapeHTML(note) + '</span></div>';
+          '<span class="usage-ring" style="--usage-percent:' + value + '%;--usage-color:' + color + '" aria-label="7d 已使用 ' + escapeHTML(formatUsagePercent(value)) + '"><strong>' + formatUsagePercent(value) + '</strong></span>' +
+          '<span class="usage-copy"><strong>7d 已使用</strong><small>' + escapeHTML(note) + '</small></span></div>';
       }
 
       function clampUsagePercent(value) {
@@ -909,6 +1207,14 @@
         return (account.schedulable ? '调度中' : '已暂停') + ' · ' + accountName(account) + '（#' + account.id + '） · 状态 ' + quickStatus.label + ' · 7d 用量 ' + quickUsageLabel(account) + detail;
       }
 
+      function accountTileTitle(account) {
+        const name = String(account.name || '').trim() || ('账号 #' + account.id);
+        const groups = accountGroups(account).map((group) => groupName(group)).join('、') || '未分组';
+        const accountState = accountStatus(account);
+        const detail = accountState.detail ? '；' + accountState.detail : '';
+        return name + '（#' + account.id + '） · 分组 ' + groups + ' · 状态 ' + accountState.label + detail + ' · ' + (account.schedulable ? '调度中' : '已暂停') + ' · 7d 用量 ' + quickUsageLabel(account);
+      }
+
       function renderQuickCards() {
         const container = $('#quickCards');
         if (!container) return;
@@ -930,9 +1236,6 @@
         container.innerHTML = proxies.map((proxy) => {
           const id = proxyId(proxy);
           const accounts = sortedAccounts(accountsByProxy.get(String(id)) || []);
-          const latencyInfo = state.latency[String(id)];
-          const latencyLabel = formatLatency(latencyInfo?.average);
-          const latencyTone = latencyClass(latencyInfo?.average);
           const squares = accounts.length ? accounts.map((account) => {
             const accountID = String(account.id);
             const updating = state.scheduleUpdating.has(accountID);
@@ -943,8 +1246,7 @@
           }).join('') : '<div class="quick-card-empty">' + escapeHTML(emptyText) + '</div>';
 
           return '<article class="quick-card">' +
-            '<div class="quick-card-head"><div><div class="quick-card-title" title="' + escapeHTML(proxyName(proxy)) + '">' + escapeHTML(proxyName(proxy)) + '</div><div class="quick-card-meta">ID ' + escapeHTML(id) + ' · ' + accounts.length + ' 个账号</div></div>' +
-            '<span class="proxy-status quick-card-status ' + escapeHTML(latencyTone) + '">' + escapeHTML(latencyLabel) + '</span></div>' +
+            '<div class="quick-card-head"><div><div class="quick-card-title" title="' + escapeHTML(proxyName(proxy)) + '">' + escapeHTML(proxyName(proxy)) + '</div><div class="quick-card-meta">ID ' + escapeHTML(id) + ' · ' + accounts.length + ' 个账号</div></div></div>' +
             '<div class="quick-account-grid">' + squares + '</div></article>';
         }).join('');
       }
@@ -1368,14 +1670,39 @@
       }
 
       function updateSummary() {
-        const statuses = state.accounts.map(accountStatus);
         $('#proxyCount').textContent = String(state.proxies.length);
-        $('#accountCount').textContent = String(state.accounts.length);
-        $('#scheduledCount').textContent = String(state.accounts.filter((account) => account.schedulable).length);
-        $('#attentionCount').textContent = String(statuses.filter((status) => status.key !== 'active').length);
+      }
+
+      function renderProxySummary() {
+        const container = $('#proxySummaryList');
+        if (!container) return;
+        if (!state.proxies.length) {
+          container.innerHTML = '<span class="proxy-summary-empty">暂无代理</span>';
+          return;
+        }
+
+        container.innerHTML = state.proxies.map((proxy) => {
+          const id = proxyId(proxy);
+          const key = id == null ? '' : String(id);
+          const proxyState = proxyStatus(proxy);
+          const latency = state.latency[key];
+          const latencyText = latencyView(latency);
+          const proxyDotClass = id == null ? 'inactive' : proxyState.raw;
+          const proxyMeta = id == null ? '未绑定代理 ID' : 'ID ' + id + ' · 原始状态 ' + proxyState.raw;
+          const tokenMarkup = id == null ? '<div class="proxy-summary-token"><div class="proxy-summary-token-head"><strong>近期请求首字</strong><small>暂无代理 ID</small></div></div>' : firstTokenSummaryMarkup(id);
+          return '<article class="proxy-summary-item">' +
+            '<div class="proxy-summary-item-head"><div>' +
+              '<div class="proxy-summary-item-name"><span class="proxy-dot ' + escapeHTML(proxyDotClass) + '"></span><strong title="' + escapeHTML(proxyName(proxy)) + '">' + escapeHTML(proxyName(proxy)) + '</strong><span class="proxy-status ' + escapeHTML(proxyState.raw) + '">' + escapeHTML(proxyState.label) + '</span></div>' +
+              '<div class="proxy-summary-item-meta">' + escapeHTML(proxyMeta) + '</div>' +
+              '</div></div>' +
+            '<div class="proxy-summary-metrics"><div class="proxy-summary-latency ' + escapeHTML(latencyClass(latency?.average)) + '"><span class="proxy-summary-metric-label">平均延迟</span><strong>' + escapeHTML(latencyText.main.replace(/^平均\s*/, '')) + '</strong><small>' + escapeHTML(latencyText.detail) + '</small></div>' +
+            '<div class="proxy-summary-account-count"><span class="proxy-summary-metric-label">包含账号</span><strong>' + proxyAccountCount(id) + '</strong></div>' +
+            tokenMarkup + '</div></article>';
+        }).join('');
       }
 
       function render() {
+        renderProxySummary();
         const groups = new Map(state.proxies.map((proxy) => [String(proxyId(proxy)), { proxy, accounts: [] }]));
         groups.set('uncategorized', { proxy: { id: null, name: '未分类' }, accounts: [] });
 
@@ -1391,37 +1718,33 @@
 
         $('#list').innerHTML = [...groups.values()].map(({ proxy, accounts }) => {
           const id = proxyId(proxy);
-          const key = id == null ? 'uncategorized' : String(id);
-          const latency = state.latency[key];
-          const latencyText = latencyView(latency);
           const proxyState = proxyStatus(proxy);
           const proxyMeta = id == null ? '' : '<div class="meta proxy-meta">ID ' + escapeHTML(id) + ' · 原始状态 ' + escapeHTML(proxyState.raw) + '</div>';
-          const latencyMarkup = id == null ? '' : '<div class="proxy-latency ' + latencyClass(latency?.average) + '"><strong>' + escapeHTML(latencyText.main) + '</strong><small>' + escapeHTML(latencyText.detail) + '</small></div>';
-          const actionMarkup = id == null ? '' : '<div class="proxy-action"><button type="button" data-test="' + escapeHTML(id) + '">重新测试</button></div>';
           const sorted = sortedAccounts(accounts);
           const accountRows = sorted.length ? sorted.map((account) => {
             const accountState = accountStatus(account);
-            const name = accountName(account);
+            const name = String(account.name || '').trim() || ('账号 #' + account.id);
+            const identity = name;
             const detail = accountState.detail || (account.notes ? String(account.notes) : '');
             const updating = state.scheduleUpdating.has(String(account.id));
-            return '<div class="account">' +
-              '<input class="account-check" type="checkbox" data-select="' + escapeHTML(account.id) + '" ' + (state.selected.has(String(account.id)) ? 'checked' : '') + ' aria-label="选择 ' + escapeHTML(name) + '">' +
-              '<div class="account-main"><div class="account-name" title="' + escapeHTML(name) + '">' + escapeHTML(name) + '<span class="account-id">#' + escapeHTML(account.id) + '</span></div><div class="account-detail">' + escapeHTML(account.platform === 'openai' ? 'OpenAI OAuth' : (account.platform || 'OAuth')) + '</div></div>' +
+            const accountID = String(account.id);
+            return '<label class="account' + (state.selected.has(accountID) ? ' selected' : '') + '" data-account-tile="' + escapeHTML(accountID) + '" title="' + escapeHTML(accountTileTitle(account)) + '">' +
+              '<input class="account-check" type="checkbox" data-select="' + escapeHTML(account.id) + '" ' + (state.selected.has(accountID) ? 'checked' : '') + ' aria-label="选择 ' + escapeHTML(identity) + '">' +
+              '<div class="account-tile-head"><div class="account-main"><div class="account-name" title="' + escapeHTML(identity) + '">' + escapeHTML(identity) + '<span class="account-id">#' + escapeHTML(account.id) + '</span></div></div><span class="account-select-mark" aria-hidden="true">✓</span></div>' +
               '<div class="group-cell">' + accountGroupsMarkup(account) + '</div>' +
-              '<div class="status-cell"><span class="badge ' + escapeHTML(accountState.key.replace(/_/g, '-')) + '" title="' + escapeHTML(accountState.detail) + '">' + escapeHTML(accountState.label) + '</span>' + (detail ? '<small title="' + escapeHTML(detail) + '">' + escapeHTML(detail) + '</small>' : '') + '</div>' +
-              '<div class="schedule-cell"><button class="schedule-button" type="button" data-schedule="' + escapeHTML(account.id) + '" title="' + (account.schedulable ? '暂停调度' : '启用调度') + '"' + (updating ? ' disabled aria-busy="true"' : '') + '><span class="switch ' + (account.schedulable ? 'on' : '') + '"><i></i></span><span class="schedule-label ' + (account.schedulable ? 'on' : '') + '">' + (account.schedulable ? '调度中' : '已暂停') + '</span></button></div>' +
+              '<div class="account-state-row"><div class="status-cell"><span class="badge ' + escapeHTML(accountState.key.replace(/_/g, '-')) + '" title="' + escapeHTML(accountState.detail) + '">' + escapeHTML(accountState.label) + '</span>' + (detail ? '<small title="' + escapeHTML(detail) + '">' + escapeHTML(detail) + '</small>' : '') + '</div>' +
+              '<div class="schedule-cell"><span class="badge ' + (account.schedulable ? 'active' : 'paused') + '" title="' + (account.schedulable ? '调度中' : '已暂停') + (updating ? ' · 更新中' : '') + '">' + (account.schedulable ? '调度中' : '已暂停') + '</span></div></div>' +
               usage(account) +
-              '</div>';
+              '</label>';
           }).join('') : '<div class="empty"><strong>暂无账号</strong>该代理当前没有绑定 OpenAI OAuth 账号</div>';
 
           const proxyStatusMarkup = id == null ? '<span class="proxy-status inactive">未绑定</span>' : '<span class="proxy-status ' + escapeHTML(proxyState.raw) + '">' + escapeHTML(proxyState.label) + '</span>';
           const proxyDotClass = id == null ? 'inactive' : proxyState.raw;
           return '<section class="panel proxy"><div class="proxy-head' + (id == null ? ' unbound' : '') + '">' +
             '<div class="proxy-heading"><div class="proxy-name-line"><span class="proxy-dot ' + escapeHTML(proxyDotClass) + '"></span><span class="proxy-name" title="' + escapeHTML(proxyName(proxy)) + '">' + escapeHTML(proxyName(proxy)) + '</span>' + proxyStatusMarkup + '</div>' + proxyMeta + '</div>' +
-            latencyMarkup +
             '<div class="proxy-count"><span class="count">' + sorted.length + '</span><span class="meta">OAuth 账号</span></div>' +
-            actionMarkup + '</div>' +
-            '<div class="accounts"><div class="account-head"><span></span><span>账号</span><span>分组</span><span>状态</span><span>调度</span><span>Codex 7d 用量</span></div>' + accountRows + '</div></section>';
+            '</div>' +
+            '<div class="accounts">' + accountRows + '</div></section>';
         }).join('');
 
         $('#selected').textContent = '已选 ' + state.selected.size + ' 个账号';
@@ -1463,7 +1786,7 @@
           initializeQuickGroups();
           state.loaded = true;
           render();
-          await testAllProxies();
+          await Promise.all([testAllProxies(), loadFirstTokenMetrics()]);
           setStatus('已加载 ' + state.proxies.length + ' 个代理、' + state.groups.length + ' 个分组、' + state.accounts.length + ' 个 OpenAI OAuth 账号');
         } catch (error) {
           state.loaded = false;
@@ -1519,16 +1842,6 @@
       $('#list').addEventListener('click', async (event) => {
         const target = event.target.closest('button');
         if (!target) return;
-
-        if (target.dataset.test) {
-          const id = target.dataset.test;
-          target.disabled = true;
-          const result = await testProxy(id);
-          if (!result.samples.some((sample) => Number.isFinite(sample))) alert(result.error || '代理测试失败');
-          target.disabled = false;
-          return;
-        }
-
         if (target.dataset.schedule) {
           const account = state.accounts.find((item) => String(item.id) === String(target.dataset.schedule));
           if (!account) return;
@@ -1554,10 +1867,13 @@
       });
 
       $('#list').addEventListener('change', (event) => {
-        if (!event.target.dataset.select) return;
-        const id = String(event.target.dataset.select);
-        if (event.target.checked) state.selected.add(id);
+        const input = event.target.closest('input[data-select]');
+        if (!input) return;
+        const id = String(input.dataset.select);
+        if (input.checked) state.selected.add(id);
         else state.selected.delete(id);
+        const tile = input.closest('[data-account-tile]');
+        if (tile) tile.classList.toggle('selected', input.checked);
         $('#selected').textContent = '已选 ' + state.selected.size + ' 个账号';
         $('#move').disabled = state.selected.size === 0;
       });
