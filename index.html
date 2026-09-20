@@ -72,6 +72,40 @@
 
     .panel { background: rgba(255, 255, 255, .94); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
     .summary { display: grid; grid-template-columns: 1fr; gap: 14px; margin-bottom: 18px; }
+    .pool-summary { display: grid; gap: 17px; padding: 18px 20px 20px; }
+    .pool-summary-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+    .pool-summary-title { margin: 3px 0 0; font-size: 17px; font-weight: 720; }
+    .pool-summary-description { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+    .pool-summary-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .pool-metric { display: flex; align-items: center; gap: 11px; min-width: 0; min-height: 82px; padding: 13px 14px; background: linear-gradient(180deg, #fff, #fbfcff); border: 1px solid var(--line); border-radius: 14px; }
+    .pool-metric-icon { display: grid; width: 34px; height: 34px; flex: 0 0 34px; place-items: center; border-radius: 10px; }
+    .pool-metric-icon svg { width: 17px; height: 17px; }
+    .pool-metric:nth-child(1) .pool-metric-icon { color: #5965d8; background: var(--primary-soft); }
+    .pool-metric:nth-child(2) .pool-metric-icon { color: var(--success); background: var(--success-soft); }
+    .pool-metric:nth-child(3) .pool-metric-icon { color: var(--warning); background: var(--warning-soft); }
+    .pool-metric:nth-child(4) .pool-metric-icon { color: var(--danger); background: var(--danger-soft); }
+    .pool-metric-copy { min-width: 0; }
+    .pool-metric-label, .pool-metric-note { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pool-metric-label { color: var(--muted); font-size: 11px; font-weight: 650; }
+    .pool-metric-value { display: block; margin-top: 1px; color: var(--text); font-size: 23px; font-weight: 760; line-height: 1.15; }
+    .pool-metric-note { margin-top: 2px; color: var(--subtle); font-size: 10px; }
+    .pool-recovery { min-width: 0; padding-top: 15px; border-top: 1px solid var(--line); }
+    .pool-recovery-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+    .pool-recovery-title { color: var(--text); font-size: 12px; font-weight: 720; }
+    .pool-recovery-head > div { min-width: 0; }
+    .pool-recovery-note, .pool-recovery-unknown { color: var(--subtle); font-size: 10px; }
+    .pool-recovery-note { display: inline-block; margin-left: 8px; }
+    .pool-recovery-unknown { flex: 0 0 auto; color: var(--warning); }
+    .pool-recovery-chart-scroll { min-width: 0; margin-top: 8px; overflow-x: auto; }
+    .pool-recovery-chart { display: block; width: 100%; min-width: 360px; height: auto; overflow: visible; }
+    .pool-recovery-grid { stroke: #edf0f4; stroke-width: 1; }
+    .pool-recovery-axis { stroke: #cfd6e2; stroke-width: 1; }
+    .pool-recovery-label, .pool-recovery-axis-title { fill: var(--subtle); font-family: inherit; font-size: 10px; }
+    .pool-recovery-axis-title { fill: var(--muted); font-size: 10px; }
+    .pool-recovery-bar { fill: var(--warning); transition: fill .18s ease; }
+    .pool-recovery-bar:hover { fill: #ad6911; }
+    .pool-recovery-count { fill: var(--text); font-family: inherit; font-size: 10px; font-weight: 700; }
+    .pool-recovery-empty { min-height: 126px; display: grid; place-items: center; padding: 14px; color: var(--subtle); background: var(--surface-soft); border-radius: 8px; font-size: 11px; text-align: center; }
     .metric {
       display: flex; align-items: center; gap: 12px; min-height: 92px; padding: 17px 18px;
       background: rgba(255, 255, 255, .86); border: 1px solid var(--line); border-radius: 16px;
@@ -275,6 +309,7 @@
     .quick-add-compact-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; }
 
     @media (max-width: 980px) {
+      .pool-summary-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .quick-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .accounts { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
       .account { min-height: 126px; }
@@ -284,6 +319,17 @@
       .top { flex-direction: column; margin-bottom: 20px; }
       .connection { width: 100%; }
       .summary { gap: 9px; }
+      .pool-summary { gap: 14px; padding: 14px; }
+      .pool-summary-head { gap: 10px; }
+      .pool-summary-description { font-size: 11px; }
+      .pool-summary-metrics { gap: 8px; }
+      .pool-metric { min-height: 72px; padding: 10px; gap: 8px; }
+      .pool-metric-icon { width: 30px; height: 30px; flex-basis: 30px; }
+      .pool-metric-icon svg { width: 15px; height: 15px; }
+      .pool-metric-value { font-size: 19px; }
+      .pool-metric-note { font-size: 9px; }
+      .pool-recovery { padding-top: 13px; }
+      .pool-recovery-head { align-items: flex-start; flex-wrap: wrap; }
       .metric { min-height: 78px; padding: 12px; gap: 9px; }
       .metric-icon { width: 32px; height: 32px; flex-basis: 32px; }
       .metric-icon svg { width: 16px; height: 16px; }
@@ -345,6 +391,50 @@
     </header>
 
     <section class="summary" aria-label="概览">
+      <section class="panel pool-summary" id="poolSummary" aria-label="号池状态">
+        <div class="pool-summary-head">
+          <div>
+            <div class="section-kicker">号池状态</div>
+            <h2 class="pool-summary-title">OAuth 账号池</h2>
+            <p class="pool-summary-description">可用数 = 总数 − 限流 − 错误；暂不可调度账号计入限流。</p>
+          </div>
+        </div>
+        <div class="pool-summary-metrics">
+          <article class="pool-metric">
+            <div class="pool-metric-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"></circle><path d="M3.5 19c.7-3 2.5-4.5 5.5-4.5s4.8 1.5 5.5 4.5"></path><path d="M16 11.5c2.2.2 3.7 1.5 4.5 3.5M16 5.5a2.5 2.5 0 0 1 0 5"></path></svg>
+            </div>
+            <div class="pool-metric-copy"><span class="pool-metric-label">OAuth 账号总数</span><strong class="pool-metric-value" id="poolTotal">—</strong><span class="pool-metric-note">全部 OpenAI OAuth</span></div>
+          </article>
+          <article class="pool-metric">
+            <div class="pool-metric-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><path d="m8 12 2.6 2.6L16.5 9"></path></svg>
+            </div>
+            <div class="pool-metric-copy"><span class="pool-metric-label">可用账号数</span><strong class="pool-metric-value" id="poolAvailable">—</strong><span class="pool-metric-note">总数 − 限流 − 错误</span></div>
+          </article>
+          <article class="pool-metric">
+            <div class="pool-metric-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 20 7v5.2c0 4.4-3.3 7.5-8 8.8-4.7-1.3-8-4.4-8-8.8V7l8-3.5Z"></path><path d="M12 8v4.5M12 16h.01"></path></svg>
+            </div>
+            <div class="pool-metric-copy"><span class="pool-metric-label">限流账号数</span><strong class="pool-metric-value" id="poolLimited">—</strong><span class="pool-metric-note">含模型级限流</span></div>
+          </article>
+          <article class="pool-metric">
+            <div class="pool-metric-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><path d="M9 9 15 15M15 9l-6 6"></path></svg>
+            </div>
+            <div class="pool-metric-copy"><span class="pool-metric-label">不可用账号数</span><strong class="pool-metric-value" id="poolUnavailable">—</strong><span class="pool-metric-note">错误账号</span></div>
+          </article>
+        </div>
+        <div class="pool-recovery">
+          <div class="pool-recovery-head">
+            <div><strong class="pool-recovery-title">账号恢复分布</strong><span class="pool-recovery-note" id="poolRecoveryNote">正在加载账号数据…</span></div>
+            <span class="pool-recovery-unknown" id="poolRecoveryUnknown"></span>
+          </div>
+          <div class="pool-recovery-chart-scroll" id="poolRecoveryChart" aria-live="polite">
+            <div class="pool-recovery-empty">正在加载账号数据…</div>
+          </div>
+        </div>
+      </section>
       <div class="metric proxy-summary" id="proxySummary">
         <div class="proxy-summary-head">
           <div class="metric-icon" aria-hidden="true">
@@ -724,6 +814,73 @@
 
         if (key === 'error' && account.error_message) detail = account.error_message;
         return { key, label: statusLabels[key], detail };
+      }
+
+      function poolAccountIsError(account) {
+        return accountStatus(account).key === 'error';
+      }
+
+      function futureTimestamp(value, now) {
+        if (!value) return null;
+        const timestamp = new Date(value).getTime();
+        return Number.isFinite(timestamp) && timestamp > now ? timestamp : null;
+      }
+
+      function poolAccountIsLimited(account) {
+        const key = accountStatus(account).key;
+        return key === 'rate_limited' || key === 'temp_unschedulable';
+      }
+
+      function accountRecoveryTimestamps(account, now) {
+        const timestamps = [];
+        const addTimestamp = (value) => {
+          const timestamp = futureTimestamp(value, now);
+          if (timestamp != null) timestamps.push(timestamp);
+        };
+
+        addTimestamp(account.rate_limit_reset_at);
+        addTimestamp(account.overload_until);
+        addTimestamp(account.temp_unschedulable_until);
+        const modelLimits = account.extra?.model_rate_limits;
+        if (modelLimits && typeof modelLimits === 'object') {
+          Object.values(modelLimits).forEach((item) => addTimestamp(item?.rate_limit_reset_at));
+        }
+        return timestamps;
+      }
+
+      function poolAccountStats() {
+        const accounts = state.accounts;
+        const limitedAccounts = accounts.filter(poolAccountIsLimited);
+        const errorCount = accounts.filter(poolAccountIsError).length;
+        const recoveryByDays = new Map();
+        const now = Date.now();
+        let recoveryAccountCount = 0;
+        let unknownRecoveryCount = 0;
+
+        accounts.forEach((account) => {
+          const resetTimestamps = accountRecoveryTimestamps(account, now);
+          if (!resetTimestamps.length) {
+            if (poolAccountIsLimited(account)) unknownRecoveryCount += 1;
+            return;
+          }
+
+          recoveryAccountCount += 1;
+          const resetAt = Math.max(...resetTimestamps);
+          const remainingDays = Math.max(1, Math.ceil((resetAt - now) / (24 * 60 * 60 * 1000)));
+          recoveryByDays.set(remainingDays, (recoveryByDays.get(remainingDays) || 0) + 1);
+        });
+
+        const available = Math.max(0, accounts.length - limitedAccounts.length - errorCount);
+        return {
+          total: accounts.length,
+          available,
+          errorCount,
+          limited: limitedAccounts.length,
+          unavailable: errorCount,
+          recoveryByDays,
+          recoveryAccountCount,
+          unknownRecoveryCount
+        };
       }
 
       function quickAccountStatus(accountState) {
@@ -1669,8 +1826,83 @@
         text.textContent = loggedIn ? '登录态已就绪' : '请先登录 Sub2API';
       }
 
+      function poolRecoveryChartMarkup(stats) {
+        const entries = [...stats.recoveryByDays.entries()].sort((left, right) => left[0] - right[0]);
+        if (!entries.length) {
+          return '<div class="pool-recovery-empty">' + (stats.unknownRecoveryCount ? '限流或暂不可调度账号暂无有效恢复时间' : '暂无明确恢复周期的账号') + '</div>';
+        }
+
+        const chartWidth = Math.max(460, entries.length * 58 + 62);
+        const chartHeight = 238;
+        const plot = { left: 43, right: chartWidth - 18, top: 20, bottom: 180 };
+        const plotWidth = plot.right - plot.left;
+        const plotHeight = plot.bottom - plot.top;
+        const maxCount = Math.max(...entries.map((entry) => entry[1]));
+        const yMax = Math.max(4, Math.ceil(maxCount / 4) * 4);
+        const yTicks = Array.from({ length: 5 }, (_, index) => {
+          const value = yMax * (1 - index / 4);
+          const y = plot.top + plotHeight * index / 4;
+          return '<line class="pool-recovery-grid" x1="' + plot.left + '" y1="' + svgNumber(y) + '" x2="' + plot.right + '" y2="' + svgNumber(y) + '"></line>' +
+            '<text class="pool-recovery-label" x="' + (plot.left - 7) + '" y="' + svgNumber(y + 3) + '" text-anchor="end">' + escapeHTML(Math.round(value)) + '</text>';
+        }).join('');
+        const slotWidth = plotWidth / entries.length;
+        const barWidth = Math.min(40, Math.max(18, slotWidth * .62));
+        const bars = entries.map(([days, count], index) => {
+          const x = plot.left + index * slotWidth + (slotWidth - barWidth) / 2;
+          const y = plot.bottom - count / yMax * plotHeight;
+          const height = Math.max(1, plot.bottom - y);
+          return '<g><title>剩余 ' + escapeHTML(days) + ' 天：' + escapeHTML(count) + ' 个账号</title>' +
+            '<rect class="pool-recovery-bar" x="' + svgNumber(x) + '" y="' + svgNumber(y) + '" width="' + svgNumber(barWidth) + '" height="' + svgNumber(height) + '" rx="4"></rect>' +
+            '<text class="pool-recovery-count" x="' + svgNumber(x + barWidth / 2) + '" y="' + svgNumber(Math.max(plot.top + 11, y - 6)) + '" text-anchor="middle">' + escapeHTML(count) + '</text>' +
+            '<text class="pool-recovery-label" x="' + svgNumber(x + barWidth / 2) + '" y="198" text-anchor="middle">' + escapeHTML(days) + '天</text></g>';
+        }).join('');
+        const chartStyle = entries.length > 7 ? ' style="width:' + chartWidth + 'px;max-width:none"' : '';
+
+        return '<svg class="pool-recovery-chart"' + chartStyle + ' viewBox="0 0 ' + chartWidth + ' ' + chartHeight + '" role="img" aria-label="账号恢复剩余天数分布图，横轴为剩余恢复天数，纵轴为账号个数">' +
+          yTicks +
+          '<line class="pool-recovery-axis" x1="' + plot.left + '" y1="' + plot.top + '" x2="' + plot.left + '" y2="' + plot.bottom + '"></line>' +
+          '<line class="pool-recovery-axis" x1="' + plot.left + '" y1="' + plot.bottom + '" x2="' + plot.right + '" y2="' + plot.bottom + '"></line>' +
+          bars +
+          '<text class="pool-recovery-axis-title" transform="rotate(-90 12 104)" x="12" y="104" text-anchor="middle">账号个数</text>' +
+          '<text class="pool-recovery-axis-title" x="' + svgNumber((plot.left + plot.right) / 2) + '" y="231" text-anchor="middle">剩余恢复天数</text>' +
+          '</svg>';
+      }
+
+      function renderPoolSummary() {
+        const total = $('#poolTotal');
+        const available = $('#poolAvailable');
+        const limited = $('#poolLimited');
+        const unavailable = $('#poolUnavailable');
+        const note = $('#poolRecoveryNote');
+        const unknown = $('#poolRecoveryUnknown');
+        const chart = $('#poolRecoveryChart');
+        if (!total || !available || !limited || !unavailable || !note || !unknown || !chart) return;
+
+        if (!state.loaded) {
+          const loadingText = readAuthToken() ? '正在加载账号数据…' : '登录后加载账号数据…';
+          total.textContent = '—';
+          available.textContent = '—';
+          limited.textContent = '—';
+          unavailable.textContent = '—';
+          note.textContent = loadingText;
+          unknown.textContent = '';
+          chart.innerHTML = '<div class="pool-recovery-empty">' + loadingText + '</div>';
+          return;
+        }
+
+        const stats = poolAccountStats();
+        total.textContent = String(stats.total);
+        available.textContent = String(stats.available);
+        limited.textContent = String(stats.limited);
+        unavailable.textContent = String(stats.unavailable);
+        note.textContent = stats.recoveryAccountCount ? '已纳入 ' + stats.recoveryAccountCount + ' 个有恢复周期的账号' : '暂无明确恢复周期';
+        unknown.textContent = stats.unknownRecoveryCount ? '未知恢复时间 ' + stats.unknownRecoveryCount + ' 个' : '';
+        chart.innerHTML = poolRecoveryChartMarkup(stats);
+      }
+
       function updateSummary() {
         $('#proxyCount').textContent = String(state.proxies.length);
+        renderPoolSummary();
       }
 
       function renderProxySummary() {
