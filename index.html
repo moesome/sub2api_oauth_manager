@@ -87,6 +87,8 @@
     .metric-label { color: var(--muted); font-size: 12px; font-weight: 600; }
     .metric-value { display: block; margin-top: 1px; color: var(--text); font-size: 23px; font-weight: 760; line-height: 1.15; }
     .metric-note { margin-top: 2px; color: var(--subtle); font-size: 11px; }
+    .metric-action { flex: 0 0 auto; margin-left: auto; padding: 7px 9px; color: var(--primary-dark); background: var(--primary-soft); border-color: #c9cdf8; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .metric-action:hover:not(:disabled) { color: #fff; background: var(--primary); border-color: var(--primary); }
 
     .assign { display: flex; align-items: center; justify-content: space-between; gap: 18px; min-height: 74px; margin-bottom: 22px; padding: 14px 18px; }
     .assign-copy, .assign-controls { display: flex; align-items: center; gap: 11px; }
@@ -124,19 +126,28 @@
     .quick-group-option input:checked + span { color: var(--primary-dark); background: var(--primary-soft); border-color: #b8bef4; font-weight: 650; }
     .quick-group-option input:focus-visible + span { outline: 3px solid rgba(88, 101, 217, .14); border-color: var(--primary); }
     .quick-note { padding: 6px 0; color: var(--subtle); font-size: 12px; }
-    .quick-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; padding-top: 15px; }
-    .quick-card { min-width: 0; padding: 14px; background: linear-gradient(180deg, #fff, #fcfdff); border: 1px solid var(--line); border-radius: 13px; }
-    .quick-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; min-width: 0; margin-bottom: 13px; }
-    .quick-card-title { overflow: hidden; color: var(--text); font-size: 14px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
-    .quick-card-meta { margin-top: 2px; color: var(--subtle); font-size: 11px; }
-    .quick-card-status { flex: 0 0 auto; min-height: 22px; padding: 2px 7px; font-size: 11px; }
-    .quick-account-grid { display: grid; grid-template-columns: repeat(auto-fill, 62px); gap: 8px; justify-content: start; }
-    .quick-account { display: grid; width: 62px; height: 62px; place-items: center; padding: 4px; color: #667085; background: var(--gray-soft); border: 1px solid #e0e4ea; border-radius: 10px; box-shadow: none; transition: .18s ease; }
+    .quick-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; gap: 14px; padding-top: 12px; }
+    .quick-card { min-width: 0; padding: 11px; background: linear-gradient(180deg, #fff, #fcfdff); border: 1px solid var(--line); border-radius: 11px; }
+    .quick-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; min-width: 0; margin-bottom: 10px; }
+    .quick-card-head > div:first-child { min-width: 0; }
+    .quick-card-title { min-width: 0; overflow: hidden; color: var(--text); font-size: 13px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+    .quick-card-meta { margin-top: 2px; color: var(--subtle); font-size: 10px; }
+    .quick-card-status { flex: 0 0 auto; min-height: 20px; padding: 2px 6px; font-size: 10px; }
+    .quick-card-status.good { color: var(--success); background: var(--success-soft); }
+    .quick-card-status.warn { color: var(--warning); background: var(--warning-soft); }
+    .quick-card-status.bad { color: var(--danger); background: var(--danger-soft); }
+    .quick-account-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; }
+    .quick-account { position: relative; display: grid; width: 100%; aspect-ratio: 1; place-items: center; min-width: 0; padding: 2px; overflow: hidden; color: #667085; background: var(--gray-soft); border: 1px solid #e0e4ea; border-radius: 7px; box-shadow: none; transition: .18s ease; }
     .quick-account:hover:not(:disabled) { color: #59656f; background: #e8ebef; border-color: #cbd2dd; transform: translateY(-1px); }
     .quick-account.on { color: var(--success); background: var(--success-soft); border-color: #bcebd8; }
     .quick-account.on:hover:not(:disabled) { color: #107a57; background: #dcf5e9; border-color: #91dbbd; }
-    .quick-account-percent { font-size: 12px; font-weight: 760; line-height: 1.1; white-space: nowrap; }
-    .quick-card-empty { padding: 15px 4px 14px; color: var(--subtle); font-size: 12px; }
+    .quick-account-status { position: absolute; top: 3px; right: 3px; z-index: 1; display: inline-flex; align-items: center; gap: 2px; max-width: calc(100% - 6px); font-size: 8px; font-weight: 760; line-height: 1; white-space: nowrap; }
+    .quick-account-status i { width: 4px; height: 4px; flex: 0 0 4px; border-radius: 50%; background: currentColor; }
+    .quick-account-status.normal { color: var(--success); }
+    .quick-account-status.limited { color: var(--warning); }
+    .quick-account-status.error { color: var(--danger); }
+    .quick-account-percent { min-width: 0; max-width: 100%; padding: 0 1px; font-size: 10px; font-weight: 760; line-height: 1.1; white-space: nowrap; }
+    .quick-card-empty { grid-column: 1 / -1; padding: 12px 4px 10px; color: var(--subtle); font-size: 11px; }
 
     #list { display: grid; gap: 18px; }
     #list.loading { opacity: .72; pointer-events: none; }
@@ -203,8 +214,46 @@
     .loading-state { border: 1px dashed var(--line-strong); border-radius: 16px; }
     .empty strong, .loading-state strong { display: block; margin-bottom: 4px; color: var(--text); }
 
+    .modal-backdrop { position: fixed; z-index: 20; inset: 0; display: grid; padding: 20px; overflow-y: auto; place-items: center; background: rgba(24, 32, 48, .42); }
+    .modal-backdrop[hidden] { display: none; }
+    .modal { width: min(700px, 100%); margin: auto; overflow: hidden; background: var(--surface); border: 1px solid rgba(215, 222, 233, .95); border-radius: 18px; box-shadow: 0 24px 70px rgba(20, 28, 48, .24); }
+    .modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; padding: 21px 22px 17px; border-bottom: 1px solid var(--line); }
+    .modal-title { margin: 0; font-size: 19px; font-weight: 750; }
+    .modal-description { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
+    .modal-close { width: 32px; height: 32px; padding: 0; color: var(--muted); border-radius: 9px; font-size: 21px; line-height: 1; }
+    .modal-body { display: grid; gap: 17px; padding: 20px 22px; }
+    .quick-add-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 13px; }
+    .form-field { display: grid; gap: 6px; min-width: 0; }
+    .form-label { color: var(--text); font-size: 12px; font-weight: 700; }
+    .form-hint { color: var(--subtle); font-size: 11px; }
+    .form-field select { width: 100%; min-width: 0; }
+    .form-field input, .form-field textarea { width: 100%; padding: 9px 11px; color: var(--text); background: #fff; border: 1px solid var(--line-strong); border-radius: 10px; outline: 0; }
+    .form-field input:focus, .form-field textarea:focus { outline: 3px solid rgba(88, 101, 217, .14); border-color: var(--primary); }
+    .form-field input[readonly] { color: var(--muted); background: var(--surface-soft); }
+    .form-field textarea { min-height: 84px; resize: vertical; }
+    .quick-add-groups { display: flex; flex-wrap: wrap; gap: 7px; min-height: 32px; }
+    .quick-add-group-option { position: relative; display: inline-flex; max-width: 100%; }
+    .quick-add-group-option input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+    .quick-add-group-option span { display: inline-flex; max-width: 100%; padding: 6px 10px; overflow: hidden; color: var(--muted); background: #fff; border: 1px solid var(--line-strong); border-radius: 8px; font-size: 12px; line-height: 1.25; text-overflow: ellipsis; white-space: nowrap; transition: .18s ease; }
+    .quick-add-group-option span:hover { color: var(--primary-dark); border-color: #aeb6ed; background: #fafaff; }
+    .quick-add-group-option input:checked + span { color: var(--primary-dark); background: var(--primary-soft); border-color: #b8bef4; font-weight: 650; }
+    .quick-add-group-option input:focus-visible + span { outline: 3px solid rgba(88, 101, 217, .14); border-color: var(--primary); }
+    .quick-add-note { color: var(--subtle); font-size: 11px; }
+    .quick-add-note.warning { color: var(--warning); }
+    .auth-link-box { display: grid; gap: 8px; padding: 12px; background: var(--surface-soft); border: 1px solid var(--line); border-radius: 11px; }
+    .auth-link-row { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .auth-link { display: block; min-width: 0; flex: 1; overflow-wrap: anywhere; color: var(--primary-dark); font-size: 12px; line-height: 1.45; word-break: break-all; white-space: normal; }
+    .auth-link.empty { color: var(--subtle); pointer-events: none; }
+    .auth-link-row button { flex: 0 0 auto; padding: 7px 9px; font-size: 11px; }
+    .modal-status { color: var(--muted); font-size: 12px; }
+    .modal-status.error { color: var(--danger); }
+    .modal-status.loading { color: var(--primary); }
+    .modal-foot { display: flex; align-items: center; justify-content: flex-end; gap: 9px; padding: 15px 22px 18px; border-top: 1px solid var(--line); }
+    .quick-add-compact-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; }
+
     @media (max-width: 980px) {
       .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .quick-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .proxy-head { grid-template-columns: minmax(190px, 1fr) auto auto; }
       .proxy-action { grid-column: 1 / -1; }
       .proxy-action button { width: 100%; }
@@ -222,12 +271,14 @@
       .metric-icon { width: 32px; height: 32px; flex-basis: 32px; }
       .metric-icon svg { width: 16px; height: 16px; }
       .metric-value { font-size: 19px; }
+      .metric-action { padding: 6px 7px; font-size: 10px; }
       .assign { align-items: stretch; flex-direction: column; gap: 11px; padding: 14px; }
       .assign-copy, .assign-controls { justify-content: space-between; }
       .assign-controls { flex-wrap: wrap; }
       .assign-controls select { flex: 1; min-width: 0; }
       .status { text-align: left; }
       .quick-dispatch { padding: 15px 14px 16px; }
+      .quick-cards { grid-template-columns: 1fr; }
       .quick-head { flex-direction: column; gap: 8px; }
       .quick-selected { align-self: flex-start; }
       .quick-filter-row { flex-direction: column; gap: 7px; }
@@ -244,6 +295,12 @@
       .account .schedule-cell { grid-column: 2 / -1; }
       .account .usage { grid-column: 2 / -1; padding: 0; }
       .status-cell small { max-width: 100px; }
+      .quick-add-grid { grid-template-columns: 1fr; }
+      .quick-add-compact-grid { grid-template-columns: 1fr; }
+      .modal-backdrop { padding: 12px; }
+      .modal-head, .modal-body, .modal-foot { padding-left: 15px; padding-right: 15px; }
+      .auth-link-row { flex-wrap: wrap; }
+      .auth-link { flex-basis: 100%; }
     }
   </style>
 </head>
@@ -284,6 +341,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"></circle><path d="M3.5 19c.7-3 2.5-4.5 5.5-4.5s4.8 1.5 5.5 4.5M16 11a2.5 2.5 0 1 0 0-5M16 14.5c2.4 0 3.9 1.2 4.5 3.5"></path></svg>
         </div>
         <div><span class="metric-label">OAuth 账号</span><strong class="metric-value" id="accountCount">—</strong><span class="metric-note">OpenAI OAuth</span></div>
+        <button class="metric-action" id="quickAddButton" type="button" disabled>快速添加</button>
       </div>
       <div class="metric">
         <div class="metric-icon" aria-hidden="true">
@@ -296,21 +354,6 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2.8 19h18.4L12 3Z"></path><path d="M12 9v4.5M12 17h.01"></path></svg>
         </div>
         <div><span class="metric-label">需要关注</span><strong class="metric-value" id="attentionCount">—</strong><span class="metric-note">错误、限流或异常</span></div>
-      </div>
-    </section>
-
-    <section class="panel assign">
-      <div class="assign-copy">
-        <span class="section-kicker">批量操作</span>
-        <strong>移动选中的账号</strong>
-        <span id="selected" class="selected">已选 0 个账号</span>
-      </div>
-      <div class="assign-controls">
-        <select id="target" aria-label="选择目标代理">
-          <option value="">选择目标代理…</option>
-        </select>
-        <button class="primary" id="move" type="button" disabled>移动账号</button>
-        <span id="status" class="status" role="status"></span>
       </div>
     </section>
 
@@ -334,10 +377,98 @@
       </div>
     </section>
 
+    <section class="panel assign">
+      <div class="assign-copy">
+        <span class="section-kicker">批量操作</span>
+        <strong>移动选中的账号</strong>
+        <span id="selected" class="selected">已选 0 个账号</span>
+      </div>
+      <div class="assign-controls">
+        <select id="target" aria-label="选择目标代理">
+          <option value="">选择目标代理…</option>
+        </select>
+        <button class="primary" id="move" type="button" disabled>移动账号</button>
+        <span id="status" class="status" role="status"></span>
+      </div>
+    </section>
+
     <div id="list" aria-live="polite">
       <div class="loading-state">正在加载代理和账号…</div>
     </div>
   </main>
+
+  <div class="modal-backdrop" id="quickAddModal" hidden aria-hidden="true">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="quickAddTitle">
+      <div class="modal-head">
+        <div>
+          <h2 class="modal-title" id="quickAddTitle">快速添加 OAuth 账号</h2>
+          <p class="modal-description">自动分配账号最少的可用代理，授权完成后使用邮箱创建账号。</p>
+        </div>
+        <button class="modal-close" type="button" data-close-quick-add aria-label="关闭快速添加">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="quick-add-grid">
+          <label class="form-field">
+            <span class="form-label">代理</span>
+            <select id="quickAddProxy" aria-label="选择快速添加代理"></select>
+          </label>
+          <label class="form-field">
+            <span class="form-label">模型限制</span>
+            <input id="quickAddModel" type="text" value="gpt-5.6-luna" autocomplete="off" spellcheck="false">
+          </label>
+        </div>
+        <div class="quick-add-compact-grid">
+          <label class="form-field">
+            <span class="form-label">并发数</span>
+            <input id="quickAddConcurrency" type="number" min="1" step="1" value="2" inputmode="numeric">
+            <span class="form-hint">单个账号允许的同时请求数</span>
+          </label>
+          <label class="form-field">
+            <span class="form-label">优先级</span>
+            <input id="quickAddPriority" type="number" min="0" step="1" value="1" inputmode="numeric">
+            <span class="form-hint">数值越小，调度优先级越高</span>
+          </label>
+          <label class="form-field">
+            <span class="form-label">Codex 指纹收敛</span>
+            <select id="quickAddFingerprintMode" aria-label="选择 Codex 指纹收敛模式">
+              <option value="off" selected>关闭</option>
+              <option value="device">设备级</option>
+              <option value="session">会话级</option>
+              <option value="full">完全收敛</option>
+            </select>
+            <span class="form-hint">非关闭模式由后端自动管理指纹</span>
+          </label>
+        </div>
+
+        <div class="form-field">
+          <span class="form-label">分组</span>
+          <div class="quick-add-groups" id="quickAddGroups" aria-label="选择快速添加分组"></div>
+          <span class="quick-add-note" id="quickAddGroupNote"></span>
+        </div>
+
+        <div class="form-field">
+          <span class="form-label">授权链接</span>
+          <div class="auth-link-box">
+            <div class="auth-link-row">
+              <a class="auth-link empty" id="quickAddAuthLink" href="#" target="_blank" rel="noopener noreferrer">正在生成…</a>
+              <button id="quickAddCopy" type="button" disabled>复制</button>
+              <button id="quickAddRefresh" type="button">刷新</button>
+            </div>
+          </div>
+        </div>
+
+        <label class="form-field">
+          <span class="form-label">授权回调 URL</span>
+          <textarea id="quickAddCallback" placeholder="粘贴授权完成后的回调 URL" spellcheck="false"></textarea>
+        </label>
+        <div class="modal-status" id="quickAddStatus" role="status" aria-live="polite"></div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" data-close-quick-add>取消</button>
+        <button class="primary" id="quickAddSubmit" type="button" disabled>授权并添加</button>
+      </div>
+    </section>
+  </div>
 
   <script>
     (() => {
@@ -351,11 +482,23 @@
         quickGroupIDs: new Set(),
         quickGroupsInitialized: false,
         scheduleUpdating: new Set(),
-        loading: false
+        loading: false,
+        loaded: false,
+        quickAdd: {
+          proxyId: '',
+          sessionId: '',
+          authUrl: '',
+          groupIDs: new Set(),
+          missingGroups: [],
+          generating: false,
+          submitting: false,
+          requestVersion: 0
+        }
       };
 
       const statusLabels = {
         active: '正常',
+        normal: '正常',
         inactive: '已停用',
         error: '错误',
         expired: '已过期',
@@ -497,6 +640,15 @@
         return String(value || '').trim().toLowerCase();
       }
 
+      function compactGroupName(value) {
+        return String(value || '').trim().toLowerCase().replace(/\s+/g, '');
+      }
+
+      function valueAsID(value) {
+        const number = Number(value);
+        return Number.isFinite(number) ? number : value;
+      }
+
       function accountGroupIDs(account) {
         const source = Array.isArray(account.group_ids)
           ? account.group_ids
@@ -563,6 +715,16 @@
 
         if (key === 'error' && account.error_message) detail = account.error_message;
         return { key, label: statusLabels[key], detail };
+      }
+
+      function quickAccountStatus(accountState) {
+        if (accountState.key === 'active' || accountState.key === 'normal') {
+          return { key: 'normal', label: '正常' };
+        }
+        if (['rate_limited', 'overloaded', 'temp_unschedulable'].includes(accountState.key)) {
+          return { key: 'limited', label: '限流' };
+        }
+        return { key: 'error', label: '错误' };
       }
 
       function formatDate(value) {
@@ -649,14 +811,25 @@
           return '<div class="usage"><div class="usage-top"><strong>暂无快照</strong><span>7d 用量</span></div><span class="usage-note">暂无已保存用量数据</span></div>';
         }
 
-        const value = Math.max(0, Math.min(100, percent));
+        const value = clampUsagePercent(percent);
         const resetAt = extra.codex_7d_reset_at ? formatDate(extra.codex_7d_reset_at) : '';
         const updatedAt = extra.codex_usage_updated_at ? formatDate(extra.codex_usage_updated_at) : '';
         const note = resetAt ? '重置 ' + resetAt : (updatedAt ? '更新 ' + updatedAt : '已保存快照');
         return '<div class="usage" title="' + escapeHTML((updatedAt ? '更新：' + updatedAt + '；' : '') + (resetAt ? '重置：' + resetAt : '')) + '">' +
-          '<div class="usage-top"><strong>' + value.toFixed(1) + '%</strong><span>7d 已使用</span></div>' +
+          '<div class="usage-top"><strong>' + formatUsagePercent(value) + '</strong><span>7d 已使用</span></div>' +
           '<div class="usage-bar"><b style="width:' + value + '%"></b></div>' +
           '<span class="usage-note">' + escapeHTML(note) + '</span></div>';
+      }
+
+      function clampUsagePercent(value) {
+        if (value == null) return null;
+        const number = Number(value);
+        return Number.isFinite(number) ? Math.max(0, Math.min(100, number)) : null;
+      }
+
+      function formatUsagePercent(value) {
+        const number = clampUsagePercent(value);
+        return number == null ? '—' : Math.round(number) + '%';
       }
 
       function accountUsagePercent(account) {
@@ -726,13 +899,14 @@
 
       function quickUsageLabel(account) {
         const percent = accountUsagePercent(account);
-        return percent == null ? '—' : Math.max(0, Math.min(100, percent)).toFixed(1) + '%';
+        return formatUsagePercent(percent);
       }
 
       function quickAccountTitle(account) {
         const accountState = accountStatus(account);
+        const quickStatus = quickAccountStatus(accountState);
         const detail = accountState.detail ? '；' + accountState.detail : '';
-        return (account.schedulable ? '调度中' : '已暂停') + ' · ' + accountName(account) + '（#' + account.id + '） · 7d 用量 ' + quickUsageLabel(account) + detail;
+        return (account.schedulable ? '调度中' : '已暂停') + ' · ' + accountName(account) + '（#' + account.id + '） · 状态 ' + quickStatus.label + ' · 7d 用量 ' + quickUsageLabel(account) + detail;
       }
 
       function renderQuickCards() {
@@ -756,19 +930,402 @@
         container.innerHTML = proxies.map((proxy) => {
           const id = proxyId(proxy);
           const accounts = sortedAccounts(accountsByProxy.get(String(id)) || []);
-          const proxyState = proxyStatus(proxy);
+          const latencyInfo = state.latency[String(id)];
+          const latencyLabel = formatLatency(latencyInfo?.average);
+          const latencyTone = latencyClass(latencyInfo?.average);
           const squares = accounts.length ? accounts.map((account) => {
             const accountID = String(account.id);
             const updating = state.scheduleUpdating.has(accountID);
+            const accountState = accountStatus(account);
+            const quickStatus = quickAccountStatus(accountState);
             const usageLabel = quickUsageLabel(account);
-            return '<button class="quick-account ' + (account.schedulable ? 'on' : 'off') + '" type="button" data-quick-schedule="' + escapeHTML(accountID) + '" title="' + escapeHTML(quickAccountTitle(account)) + '" aria-label="' + escapeHTML(quickAccountTitle(account)) + '"' + (updating ? ' disabled aria-busy="true"' : '') + '><span class="quick-account-percent">' + escapeHTML(usageLabel) + '</span></button>';
+            return '<button class="quick-account ' + (account.schedulable ? 'on' : 'off') + '" type="button" data-quick-schedule="' + escapeHTML(accountID) + '" title="' + escapeHTML(quickAccountTitle(account)) + '" aria-label="' + escapeHTML(quickAccountTitle(account)) + '"' + (updating ? ' disabled aria-busy="true"' : '') + '><span class="quick-account-status ' + escapeHTML(quickStatus.key) + '" title="' + escapeHTML(accountState.detail || quickStatus.label) + '"><i aria-hidden="true"></i><span>' + escapeHTML(quickStatus.label) + '</span></span><span class="quick-account-percent">' + escapeHTML(usageLabel) + '</span></button>';
           }).join('') : '<div class="quick-card-empty">' + escapeHTML(emptyText) + '</div>';
 
           return '<article class="quick-card">' +
             '<div class="quick-card-head"><div><div class="quick-card-title" title="' + escapeHTML(proxyName(proxy)) + '">' + escapeHTML(proxyName(proxy)) + '</div><div class="quick-card-meta">ID ' + escapeHTML(id) + ' · ' + accounts.length + ' 个账号</div></div>' +
-            '<span class="proxy-status quick-card-status ' + escapeHTML(proxyState.raw) + '">' + escapeHTML(proxyState.label) + '</span></div>' +
+            '<span class="proxy-status quick-card-status ' + escapeHTML(latencyTone) + '">' + escapeHTML(latencyLabel) + '</span></div>' +
             '<div class="quick-account-grid">' + squares + '</div></article>';
         }).join('');
+      }
+
+      function activeProxies() {
+        return state.proxies.filter((proxy) => proxyId(proxy) != null && proxyStatus(proxy).raw === 'active');
+      }
+
+      function proxyAccountCount(proxyID) {
+        const key = String(proxyID);
+        return state.accounts.filter((account) => account.proxy_id != null && String(account.proxy_id) === key).length;
+      }
+
+      function compareProxyIDs(left, right) {
+        const leftNumber = Number(proxyId(left));
+        const rightNumber = Number(proxyId(right));
+        if (Number.isFinite(leftNumber) && Number.isFinite(rightNumber) && leftNumber !== rightNumber) return leftNumber - rightNumber;
+        return String(proxyId(left)).localeCompare(String(proxyId(right)), 'en', { numeric: true });
+      }
+
+      function leastLoadedProxy(proxies) {
+        return [...proxies].sort((left, right) => {
+          const countOrder = proxyAccountCount(proxyId(left)) - proxyAccountCount(proxyId(right));
+          return countOrder || compareProxyIDs(left, right);
+        })[0] || null;
+      }
+
+      function quickAddDefaultGroups() {
+        const wanted = new Map([['openai聚合', 'openai聚合'], ['号池', '号池']]);
+        const groupIDs = new Set();
+        const found = new Set();
+
+        state.groups.forEach((group) => {
+          const id = groupId(group);
+          const key = compactGroupName(groupName(group));
+          if (id != null && wanted.has(key)) {
+            groupIDs.add(String(id));
+            found.add(key);
+          }
+        });
+
+        return {
+          groupIDs,
+          missing: [...wanted.values()].filter((name) => !found.has(name))
+        };
+      }
+
+      function setQuickAddStatus(message, isError = false, isLoading = false) {
+        const element = $('#quickAddStatus');
+        if (!element) return;
+        element.textContent = message || '';
+        element.hidden = !message;
+        element.className = 'modal-status' + (isError ? ' error' : '') + (isLoading ? ' loading' : '');
+      }
+
+      function updateQuickAddButton() {
+        const button = $('#quickAddButton');
+        if (!button) return;
+        button.disabled = !state.loaded || state.loading || !readAuthToken();
+      }
+
+      function renderQuickAddProxyOptions() {
+        const select = $('#quickAddProxy');
+        if (!select) return;
+
+        const proxies = activeProxies();
+        if (!proxies.length) {
+          select.innerHTML = '<option value="">暂无可用代理</option>';
+          select.value = '';
+          return;
+        }
+
+        select.innerHTML = proxies.map((proxy) => {
+          const id = proxyId(proxy);
+          const count = proxyAccountCount(id);
+          return '<option value="' + escapeHTML(id) + '">' + escapeHTML(proxyName(proxy)) + '（当前 ' + count + ' 个账号）</option>';
+        }).join('');
+        select.value = state.quickAdd.proxyId || String(proxyId(leastLoadedProxy(proxies)));
+        if (!proxies.some((proxy) => String(proxyId(proxy)) === String(select.value))) select.value = String(proxyId(proxies[0]));
+        state.quickAdd.proxyId = select.value;
+      }
+
+      function renderQuickAddGroups() {
+        const container = $('#quickAddGroups');
+        const note = $('#quickAddGroupNote');
+        if (!container) return;
+
+        const groups = state.groups.filter((group) => groupId(group) != null);
+        container.innerHTML = groups.length ? groups.map((group) => {
+          const id = String(groupId(group));
+          const label = groupName(group);
+          return '<label class="quick-add-group-option" title="' + escapeHTML(label) + '">' +
+            '<input type="checkbox" data-quick-add-group="' + escapeHTML(id) + '"' + (state.quickAdd.groupIDs.has(id) ? ' checked' : '') + ' aria-label="选择分组 ' + escapeHTML(label) + '">' +
+            '<span>' + escapeHTML(label) + '</span></label>';
+        }).join('') : '<span class="quick-add-note">暂无可用分组，将创建为未分组账号</span>';
+
+        if (!note) return;
+        note.className = 'quick-add-note' + (state.quickAdd.missingGroups.length ? ' warning' : '');
+        if (state.quickAdd.missingGroups.length) {
+          note.textContent = '未找到：' + state.quickAdd.missingGroups.join('、') + '；提交时将跳过，均不存在时创建为未分组。';
+        } else {
+          note.textContent = '';
+        }
+        note.hidden = !state.quickAdd.missingGroups.length;
+      }
+
+      function renderQuickAddAuthLink() {
+        const link = $('#quickAddAuthLink');
+        const copy = $('#quickAddCopy');
+        if (!link) return;
+
+        if (state.quickAdd.authUrl) {
+          link.href = state.quickAdd.authUrl;
+          link.textContent = state.quickAdd.authUrl;
+          link.classList.remove('empty');
+          if (copy) copy.disabled = false;
+        } else {
+          link.href = '#';
+          link.textContent = state.quickAdd.generating ? '正在生成授权链接…' : '尚未生成授权链接';
+          link.classList.add('empty');
+          if (copy) copy.disabled = true;
+        }
+      }
+
+      function updateQuickAddModalControls() {
+        const generating = state.quickAdd.generating;
+        const submitting = state.quickAdd.submitting;
+        const proxy = $('#quickAddProxy');
+        const model = $('#quickAddModel');
+        const concurrency = $('#quickAddConcurrency');
+        const priority = $('#quickAddPriority');
+        const fingerprintMode = $('#quickAddFingerprintMode');
+        const groups = $('#quickAddGroups');
+        const callback = $('#quickAddCallback');
+        const refresh = $('#quickAddRefresh');
+        const submit = $('#quickAddSubmit');
+        if (proxy) proxy.disabled = generating || submitting;
+        if (model) model.disabled = submitting;
+        if (concurrency) concurrency.disabled = submitting;
+        if (priority) priority.disabled = submitting;
+        if (fingerprintMode) fingerprintMode.disabled = submitting;
+        if (groups) groups.style.pointerEvents = submitting ? 'none' : '';
+        if (callback) callback.disabled = submitting;
+        if (refresh) refresh.disabled = generating || submitting || !state.quickAdd.proxyId;
+        if (submit) submit.disabled = generating || submitting || !state.quickAdd.sessionId || !state.quickAdd.authUrl;
+        renderQuickAddAuthLink();
+      }
+
+      async function generateQuickAddAuthURL() {
+        const proxyID = state.quickAdd.proxyId;
+        if (!proxyID) {
+          setQuickAddStatus('请选择一个可用代理', true);
+          updateQuickAddModalControls();
+          return false;
+        }
+
+        const version = state.quickAdd.requestVersion;
+        state.quickAdd.generating = true;
+        state.quickAdd.sessionId = '';
+        state.quickAdd.authUrl = '';
+        setQuickAddStatus('正在生成授权链接…', false, true);
+        updateQuickAddModalControls();
+
+        try {
+          const data = await api('/admin/openai/generate-auth-url', {
+            method: 'POST',
+            body: JSON.stringify({ proxy_id: valueAsID(proxyID) })
+          });
+          if (state.quickAdd.requestVersion !== version) return false;
+
+          const authURL = data?.auth_url || data?.url;
+          const sessionID = data?.session_id || data?.sessionId;
+          if (!authURL || !sessionID) throw new Error('授权链接接口未返回有效会话');
+          state.quickAdd.authUrl = String(authURL);
+          state.quickAdd.sessionId = String(sessionID);
+          setQuickAddStatus('');
+          return true;
+        } catch (error) {
+          if (state.quickAdd.requestVersion !== version) return false;
+          setQuickAddStatus(error.message || '授权链接生成失败', true);
+          return false;
+        } finally {
+          if (state.quickAdd.requestVersion === version) {
+            state.quickAdd.generating = false;
+            updateQuickAddModalControls();
+          }
+        }
+      }
+
+      function parseAuthorizationCallback(value) {
+        const input = String(value || '').trim();
+        if (!input) throw new Error('请先粘贴授权回调 URL');
+
+        let searchParams = new URLSearchParams();
+        let hashParams = new URLSearchParams();
+        try {
+          const url = new URL(input, window.location.origin);
+          searchParams = url.searchParams;
+          hashParams = new URLSearchParams(url.hash.replace(/^#/, '').replace(/^\?/, ''));
+        } catch {
+          // 下面的原始参数解析兼容只粘贴 query string 的情况。
+        }
+
+        const rawQuery = input.includes('?') ? input.slice(input.indexOf('?') + 1).split('#')[0] : input;
+        const rawParams = new URLSearchParams(rawQuery);
+        const code = searchParams.get('code') || hashParams.get('code') || rawParams.get('code');
+        const stateValue = searchParams.get('state') || hashParams.get('state') || rawParams.get('state');
+        const errorValue = searchParams.get('error') || hashParams.get('error') || rawParams.get('error');
+        if (errorValue) throw new Error('授权失败：' + errorValue);
+        if (!code || !stateValue) throw new Error('回调 URL 中缺少 code 或 state');
+        return { code, state: stateValue };
+      }
+
+      function exchangeEmail(data) {
+        return String(data?.email || data?.account_email || data?.user_email || data?.account?.email || data?.credentials?.email || data?.user?.email || '').trim();
+      }
+
+      function exchangeCredentials(data) {
+        const source = data?.credentials && typeof data.credentials === 'object' ? data.credentials : data;
+        if (!source || typeof source !== 'object' || Array.isArray(source)) return null;
+        const credentials = { ...source };
+        delete credentials.code;
+        delete credentials.state;
+        delete credentials.session_id;
+        delete credentials.auth_url;
+        delete credentials.message;
+        return credentials;
+      }
+
+      async function submitQuickAdd() {
+        if (state.quickAdd.submitting || state.quickAdd.generating) return;
+
+        const proxyID = state.quickAdd.proxyId;
+        const model = String($('#quickAddModel')?.value || '').trim();
+        const concurrencyValue = String($('#quickAddConcurrency')?.value || '').trim();
+        const priorityValue = String($('#quickAddPriority')?.value || '').trim();
+        const fingerprintMode = String($('#quickAddFingerprintMode')?.value || 'off').trim();
+        const concurrency = Number(concurrencyValue);
+        const priority = Number(priorityValue);
+        const proxy = activeProxies().find((item) => String(proxyId(item)) === String(proxyID));
+        if (!proxy) return setQuickAddStatus('请选择一个 active 代理', true);
+        if (!model) return setQuickAddStatus('模型限制不能为空', true);
+        if (!concurrencyValue || !Number.isInteger(concurrency) || concurrency < 1) return setQuickAddStatus('并发数必须是大于等于 1 的整数', true);
+        if (!priorityValue || !Number.isInteger(priority) || priority < 0) return setQuickAddStatus('优先级必须是大于等于 0 的整数', true);
+        if (!['off', 'device', 'session', 'full'].includes(fingerprintMode)) return setQuickAddStatus('Codex 指纹收敛模式无效', true);
+        if (!state.quickAdd.sessionId) return setQuickAddStatus('请先生成授权链接', true);
+
+        let callback;
+        try {
+          callback = parseAuthorizationCallback($('#quickAddCallback')?.value);
+        } catch (error) {
+          return setQuickAddStatus(error.message || '授权回调 URL 无效', true);
+        }
+
+        const version = state.quickAdd.requestVersion;
+        const groupIDs = [...state.quickAdd.groupIDs]
+          .filter((id) => state.groups.some((group) => String(groupId(group)) === String(id)))
+          .map(valueAsID);
+        const proxyValue = valueAsID(proxyID);
+        state.quickAdd.submitting = true;
+        updateQuickAddModalControls();
+
+        try {
+          setQuickAddStatus('正在交换 OAuth 授权…', false, true);
+          const exchanged = await api('/admin/openai/exchange-code', {
+            method: 'POST',
+            body: JSON.stringify({
+              session_id: state.quickAdd.sessionId,
+              code: callback.code,
+              state: callback.state,
+              proxy_id: proxyValue
+            })
+          });
+          if (state.quickAdd.requestVersion !== version) return;
+
+          const email = exchangeEmail(exchanged);
+          if (!email) throw new Error('授权结果中没有找到邮箱，无法填充账号名称');
+          const credentials = exchangeCredentials(exchanged);
+          if (!credentials) throw new Error('授权结果中没有有效的 OAuth 凭据');
+          credentials.model_mapping = { [model]: model };
+
+          setQuickAddStatus('授权成功，正在创建账号…', false, true);
+          await api('/admin/accounts', {
+            method: 'POST',
+            body: JSON.stringify({
+              name: email,
+              platform: 'openai',
+              type: 'oauth',
+              credentials,
+              proxy_id: proxyValue,
+              concurrency,
+              priority,
+              extra: fingerprintMode === 'off' ? {} : { codex_fingerprint_mode: fingerprintMode },
+              group_ids: groupIDs
+            })
+          });
+          if (state.quickAdd.requestVersion !== version) return;
+
+          state.quickAdd.submitting = false;
+          closeQuickAdd();
+          await load();
+          setStatus('已快速添加账号：' + email);
+        } catch (error) {
+          if (state.quickAdd.requestVersion !== version) return;
+          state.quickAdd.sessionId = '';
+          setQuickAddStatus(error.message || '快速添加失败；请刷新授权链接后重试', true);
+        } finally {
+          if (state.quickAdd.requestVersion === version) {
+            state.quickAdd.submitting = false;
+            updateQuickAddModalControls();
+          }
+        }
+      }
+
+      async function copyQuickAddAuthURL() {
+        const value = state.quickAdd.authUrl;
+        if (!value) return;
+
+        try {
+          if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(value);
+          } else {
+            const textarea = document.createElement('textarea');
+            textarea.value = value;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            const copied = document.execCommand('copy');
+            textarea.remove();
+            if (!copied) throw new Error('浏览器拒绝了复制操作');
+          }
+          setQuickAddStatus('授权链接已复制');
+        } catch (error) {
+          setQuickAddStatus(error.message || '复制失败，请手动复制链接', true);
+        }
+      }
+
+      async function openQuickAdd() {
+        if (!state.loaded || state.loading) return;
+        const proxies = activeProxies();
+        const defaultProxy = leastLoadedProxy(proxies);
+        if (!defaultProxy) return alert('当前没有状态为 active 的代理，暂时无法添加账号');
+
+        const defaults = quickAddDefaultGroups();
+        state.quickAdd = {
+          proxyId: String(proxyId(defaultProxy)),
+          sessionId: '',
+          authUrl: '',
+          groupIDs: defaults.groupIDs,
+          missingGroups: defaults.missing,
+          generating: false,
+          submitting: false,
+          requestVersion: state.quickAdd.requestVersion + 1
+        };
+        $('#quickAddModel').value = 'gpt-5.6-luna';
+        $('#quickAddConcurrency').value = '2';
+        $('#quickAddPriority').value = '1';
+        $('#quickAddFingerprintMode').value = 'off';
+        $('#quickAddCallback').value = '';
+        renderQuickAddProxyOptions();
+        renderQuickAddGroups();
+        renderQuickAddAuthLink();
+        setQuickAddStatus('准备生成授权链接…', false, true);
+        const modal = $('#quickAddModal');
+        modal.hidden = false;
+        modal.setAttribute('aria-hidden', 'false');
+        updateQuickAddModalControls();
+        $('#quickAddProxy').focus();
+        await generateQuickAddAuthURL();
+      }
+
+      function closeQuickAdd() {
+        if (state.quickAdd.submitting) return;
+        state.quickAdd.requestVersion += 1;
+        state.quickAdd.generating = false;
+        const modal = $('#quickAddModal');
+        if (!modal) return;
+        modal.hidden = true;
+        modal.setAttribute('aria-hidden', 'true');
+        updateQuickAddButton();
       }
 
       async function toggleSchedule(account, trigger) {
@@ -872,12 +1429,15 @@
         if (state.quickGroupsInitialized) renderQuickGroups();
         renderQuickCards();
         updateSummary();
+        updateQuickAddButton();
       }
 
       async function load() {
         if (state.loading) return;
         if (!readAuthToken()) {
+          state.loaded = false;
           updateConnection();
+          updateQuickAddButton();
           setStatus('请先登录 Sub2API', true);
           $('#list').innerHTML = '<div class="loading-state"><strong>尚未检测到登录态</strong>请先登录 Sub2API，再打开本页面</div>';
           $('#quickGroups').innerHTML = '<span class="quick-note">登录后加载分组</span>';
@@ -901,10 +1461,12 @@
           state.accounts = accounts.filter((account) => String(account.platform || '').toLowerCase() === 'openai' && String(account.type || '').toLowerCase() === 'oauth');
           state.selected = new Set([...state.selected].filter((id) => state.accounts.some((account) => String(account.id) === id)));
           initializeQuickGroups();
+          state.loaded = true;
           render();
           await testAllProxies();
           setStatus('已加载 ' + state.proxies.length + ' 个代理、' + state.groups.length + ' 个分组、' + state.accounts.length + ' 个 OpenAI OAuth 账号');
         } catch (error) {
+          state.loaded = false;
           setStatus(error.message || '加载失败', true);
           $('#list').innerHTML = '<div class="loading-state"><strong>数据加载失败</strong>' + escapeHTML(error.message || '请稍后重试') + '</div>';
           $('#quickGroups').innerHTML = '<span class="quick-note">分组加载失败</span>';
@@ -913,8 +1475,46 @@
         } finally {
           state.loading = false;
           $('#list').classList.remove('loading');
+          updateQuickAddButton();
         }
       }
+
+      $('#quickAddButton').addEventListener('click', openQuickAdd);
+
+      $('#quickAddProxy').addEventListener('change', async (event) => {
+        state.quickAdd.proxyId = event.target.value;
+        state.quickAdd.sessionId = '';
+        state.quickAdd.authUrl = '';
+        $('#quickAddCallback').value = '';
+        renderQuickAddProxyOptions();
+        setQuickAddStatus('代理已切换，正在生成新的授权链接…', false, true);
+        await generateQuickAddAuthURL();
+      });
+
+      $('#quickAddGroups').addEventListener('change', (event) => {
+        const input = event.target.closest('input[data-quick-add-group]');
+        if (!input) return;
+        const id = String(input.dataset.quickAddGroup);
+        if (input.checked) state.quickAdd.groupIDs.add(id);
+        else state.quickAdd.groupIDs.delete(id);
+        renderQuickAddGroups();
+      });
+
+      $('#quickAddRefresh').addEventListener('click', async () => {
+        $('#quickAddCallback').value = '';
+        await generateQuickAddAuthURL();
+      });
+
+      $('#quickAddCopy').addEventListener('click', copyQuickAddAuthURL);
+      $('#quickAddSubmit').addEventListener('click', submitQuickAdd);
+
+      $('#quickAddModal').addEventListener('click', (event) => {
+        if (event.target === event.currentTarget || event.target.closest('[data-close-quick-add]')) closeQuickAdd();
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !$('#quickAddModal').hidden) closeQuickAdd();
+      });
 
       $('#list').addEventListener('click', async (event) => {
         const target = event.target.closest('button');
