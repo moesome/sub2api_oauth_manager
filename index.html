@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fb">
+  <title>OAuth 管理 · Sub2API</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --page: #f5f7fb;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --line: #e6eaf0;
+      --line-strong: #d7dee9;
+      --text: #172033;
+      --muted: #697386;
+      --subtle: #98a2b3;
+      --primary: #5865d9;
+      --primary-dark: #4652c5;
+      --primary-soft: #eef0ff;
+      --success: #15966c;
+      --success-soft: #e8f8f1;
+      --warning: #c77b15;
+      --warning-soft: #fff5df;
+      --danger: #d34f5f;
+      --danger-soft: #fff0f1;
+      --gray-soft: #f0f2f5;
+      --shadow: 0 8px 28px rgba(38, 52, 77, .06);
+      --shadow-hover: 0 12px 32px rgba(38, 52, 77, .1);
+    }
+
+    * { box-sizing: border-box; }
+    html { min-width: 320px; background: var(--page); }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 94% -12%, rgba(113, 128, 255, .12), transparent 32%),
+        radial-gradient(circle at -8% 18%, rgba(97, 211, 183, .08), transparent 27%),
+        var(--page);
+      font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, select { font: inherit; }
+    button, select { cursor: pointer; }
+    button:disabled { cursor: not-allowed; opacity: .55; }
+
+    .wrap { width: min(1480px, calc(100% - 40px)); margin: 0 auto; padding: 34px 0 64px; }
+    .top { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 28px; }
+    .brand { display: flex; align-items: flex-start; gap: 14px; }
+    .brand-icon {
+      display: grid; width: 44px; height: 44px; flex: 0 0 44px; place-items: center; color: #fff;
+      background: linear-gradient(145deg, #6977ec, #4d5ad0); border-radius: 14px;
+      box-shadow: 0 8px 18px rgba(88, 101, 217, .24);
+    }
+    .brand-icon svg { width: 23px; height: 23px; }
+    .eyebrow { margin: 1px 0 5px; color: var(--primary); font-size: 11px; font-weight: 750; letter-spacing: .16em; text-transform: uppercase; }
+    .title { margin: 0; color: var(--text); font-size: clamp(25px, 3vw, 32px); font-weight: 760; letter-spacing: -.035em; line-height: 1.15; }
+    .sub { margin-top: 7px; color: var(--muted); font-size: 13px; }
+    .connection {
+      display: flex; align-items: center; gap: 11px; min-width: 190px; padding: 12px 15px;
+      background: rgba(255, 255, 255, .8); border: 1px solid rgba(215, 222, 233, .9); border-radius: 14px;
+      box-shadow: 0 5px 18px rgba(38, 52, 77, .04);
+    }
+    .connection-dot { width: 9px; height: 9px; flex: 0 0 9px; background: var(--success); border-radius: 50%; box-shadow: 0 0 0 4px var(--success-soft); }
+    .connection-dot.pending { background: var(--warning); box-shadow: 0 0 0 4px var(--warning-soft); }
+    .connection strong, .connection small { display: block; }
+    .connection strong { font-size: 13px; }
+    .connection small { margin-top: 1px; color: var(--muted); font-size: 11px; }
+
+    .panel { background: rgba(255, 255, 255, .94); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
+    .summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
+    .metric {
+      display: flex; align-items: center; gap: 12px; min-height: 92px; padding: 17px 18px;
+      background: rgba(255, 255, 255, .86); border: 1px solid var(--line); border-radius: 16px;
+      box-shadow: 0 5px 20px rgba(38, 52, 77, .035);
+    }
+    .metric-icon { display: grid; width: 38px; height: 38px; flex: 0 0 38px; place-items: center; border-radius: 11px; }
+    .metric-icon svg { width: 19px; height: 19px; }
+    .metric:nth-child(1) .metric-icon { color: #5965d8; background: var(--primary-soft); }
+    .metric:nth-child(2) .metric-icon { color: #7d57c8; background: #f1ebff; }
+    .metric:nth-child(3) .metric-icon { color: var(--success); background: var(--success-soft); }
+    .metric:nth-child(4) .metric-icon { color: var(--warning); background: var(--warning-soft); }
+    .metric-label, .metric-note { display: block; }
+    .metric-label { color: var(--muted); font-size: 12px; font-weight: 600; }
+    .metric-value { display: block; margin-top: 1px; color: var(--text); font-size: 23px; font-weight: 760; line-height: 1.15; }
+    .metric-note { margin-top: 2px; color: var(--subtle); font-size: 11px; }
+
+    .assign { display: flex; align-items: center; justify-content: space-between; gap: 18px; min-height: 74px; margin-bottom: 22px; padding: 14px 18px; }
+    .assign-copy, .assign-controls { display: flex; align-items: center; gap: 11px; }
+    .assign-copy { min-width: 0; }
+    .assign-copy strong { white-space: nowrap; }
+    .section-kicker { color: var(--primary); font-size: 11px; font-weight: 750; letter-spacing: .08em; white-space: nowrap; }
+    .selected { padding-left: 11px; color: var(--muted); font-size: 12px; border-left: 1px solid var(--line-strong); white-space: nowrap; }
+    select {
+      min-width: 180px; padding: 9px 34px 9px 12px; color: var(--text); background-color: #fff;
+      background-image: linear-gradient(45deg, transparent 50%, #8b95a7 50%), linear-gradient(135deg, #8b95a7 50%, transparent 50%);
+      background-position: calc(100% - 16px) 14px, calc(100% - 11px) 14px; background-repeat: no-repeat; background-size: 5px 5px, 5px 5px;
+      border: 1px solid var(--line-strong); border-radius: 10px; appearance: none;
+    }
+    select:focus { outline: 3px solid rgba(88, 101, 217, .14); border-color: var(--primary); }
+    button { padding: 9px 14px; color: var(--muted); background: #fff; border: 1px solid var(--line-strong); border-radius: 10px; transition: .18s ease; }
+    button:hover:not(:disabled) { color: var(--primary-dark); border-color: #aeb6ed; background: #fafaff; }
+    button.primary { color: #fff; background: linear-gradient(135deg, #6875e8, #5360d3); border-color: transparent; box-shadow: 0 5px 13px rgba(88, 101, 217, .2); font-weight: 650; }
+    button.primary:hover:not(:disabled) { color: #fff; background: linear-gradient(135deg, #5e6bdd, #4b57c6); box-shadow: 0 7px 17px rgba(88, 101, 217, .27); }
+    .status { min-width: 0; color: var(--muted); font-size: 12px; text-align: right; }
+    .status.error { color: var(--danger); }
+    .status.loading { color: var(--primary); }
+
+    #list { display: grid; gap: 18px; }
+    #list.loading { opacity: .72; pointer-events: none; }
+    .proxy { overflow: hidden; transition: box-shadow .2s ease, transform .2s ease; }
+    .proxy:hover { box-shadow: var(--shadow-hover); }
+    .proxy-head { display: grid; grid-template-columns: minmax(220px, 1fr) auto auto auto; align-items: center; gap: 18px; padding: 18px 20px; background: linear-gradient(180deg, #fff, #fcfdff); border-bottom: 1px solid var(--line); }
+    .proxy-head.unbound { grid-template-columns: minmax(220px, 1fr) auto; }
+    .proxy-head.unbound .proxy-count { grid-column: 2; grid-row: 1; }
+    .proxy-heading { min-width: 0; }
+    .proxy-name-line { display: flex; align-items: center; gap: 9px; min-width: 0; }
+    .proxy-dot { width: 9px; height: 9px; flex: 0 0 9px; background: var(--success); border-radius: 50%; }
+    .proxy-dot.inactive, .proxy-dot.expired { background: var(--subtle); }
+    .proxy-dot.error { background: var(--danger); }
+    .proxy-name { overflow: hidden; font-size: 16px; font-weight: 720; text-overflow: ellipsis; white-space: nowrap; }
+    .meta { color: var(--muted); font-size: 12px; }
+    .proxy-meta { margin-top: 3px; padding-left: 18px; }
+    .proxy-status, .badge { display: inline-flex; align-items: center; justify-content: center; min-height: 25px; padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 650; white-space: nowrap; }
+    .proxy-status.active, .badge.active, .badge.normal { color: var(--success); background: var(--success-soft); }
+    .proxy-status.inactive, .proxy-status.expired, .badge.inactive, .badge.expired, .badge.paused, .badge.unknown { color: #667085; background: var(--gray-soft); }
+    .proxy-status.error, .badge.error { color: var(--danger); background: var(--danger-soft); }
+    .badge.rate-limited, .badge.overloaded, .badge.temp-unschedulable { color: var(--warning); background: var(--warning-soft); }
+    .proxy-latency { min-width: 112px; color: var(--muted); font-size: 12px; text-align: right; white-space: nowrap; }
+    .proxy-latency strong, .proxy-latency small { display: block; }
+    .proxy-latency strong { font-size: 12px; font-weight: 700; }
+    .proxy-latency small { overflow: hidden; margin-top: 2px; color: var(--subtle); font-size: 10px; font-weight: 500; text-overflow: ellipsis; }
+    .proxy-latency.good { color: var(--success); }
+    .proxy-latency.warn { color: var(--warning); }
+    .proxy-latency.bad { color: var(--danger); }
+    .proxy-count { min-width: 72px; text-align: center; }
+    .count { display: block; font-size: 19px; font-weight: 760; line-height: 1.1; }
+    .proxy-action { min-width: 82px; }
+
+    .accounts { padding: 0 20px 6px; }
+    .account-head, .account { display: grid; grid-template-columns: 30px minmax(180px, 1.25fr) minmax(145px, .9fr) minmax(110px, .7fr) minmax(140px, .85fr) minmax(230px, 1.4fr); align-items: center; gap: 13px; }
+    .account-head { min-height: 42px; color: var(--subtle); font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+    .account { min-height: 73px; border-top: 1px solid #edf0f4; }
+    .account:hover { background: linear-gradient(90deg, transparent, #fbfcff 8%, #fbfcff 92%, transparent); }
+    .account-check { width: 16px; height: 16px; margin: 0 auto; accent-color: var(--primary); }
+    .account-main { min-width: 0; }
+    .account-name { overflow: hidden; color: var(--text); font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+    .account-id { margin-left: 5px; color: var(--subtle); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 11px; font-weight: 500; }
+    .account-detail { overflow: hidden; margin-top: 2px; color: var(--subtle); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .group-cell { min-width: 0; }
+    .account-groups { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; max-height: 42px; overflow: hidden; }
+    .account-group { display: inline-flex; max-width: 100%; padding: 3px 7px; overflow: hidden; color: #5d4ca1; background: #f2efff; border: 1px solid #e5e0ff; border-radius: 6px; font-size: 11px; line-height: 1.25; text-overflow: ellipsis; white-space: nowrap; }
+    .account-groups-empty { color: var(--subtle); font-size: 11px; }
+    .status-cell, .schedule-cell { min-width: 0; }
+    .status-cell small { display: block; overflow: hidden; margin-top: 3px; color: var(--subtle); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .schedule-button { display: inline-flex; align-items: center; gap: 8px; padding: 0; color: var(--muted); background: transparent; border: 0; box-shadow: none; }
+    .schedule-button:hover:not(:disabled) { color: var(--primary-dark); background: transparent; border-color: transparent; }
+    .switch { display: inline-flex; width: 37px; height: 21px; padding: 3px; align-items: center; background: #cbd2dd; border: 0; border-radius: 20px; transition: .18s ease; }
+    .switch i { display: block; width: 15px; height: 15px; background: #fff; border-radius: 50%; box-shadow: 0 1px 3px rgba(24, 32, 48, .22); transition: .18s ease; }
+    .switch.on { background: #54c19b; }
+    .switch.on i { transform: translateX(16px); }
+    .schedule-label { font-size: 12px; white-space: nowrap; }
+    .schedule-label.on { color: var(--success); font-weight: 650; }
+    .usage { min-width: 0; }
+    .usage-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 11px; }
+    .usage-top strong { color: var(--text); font-size: 12px; font-weight: 700; }
+    .usage-bar { height: 6px; margin-top: 6px; overflow: hidden; background: #edf0f5; border-radius: 999px; }
+    .usage-bar b { display: block; height: 100%; background: linear-gradient(90deg, #63cda5, #4eae90); border-radius: inherit; }
+    .usage-note { display: block; overflow: hidden; margin-top: 4px; color: var(--subtle); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+    .empty, .loading-state { padding: 42px 24px; color: var(--muted); text-align: center; }
+    .loading-state { border: 1px dashed var(--line-strong); border-radius: 16px; }
+    .empty strong, .loading-state strong { display: block; margin-bottom: 4px; color: var(--text); }
+
+    @media (max-width: 980px) {
+      .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .proxy-head { grid-template-columns: minmax(190px, 1fr) auto auto; }
+      .proxy-action { grid-column: 1 / -1; }
+      .proxy-action button { width: 100%; }
+      .account-head, .account { grid-template-columns: 26px minmax(150px, 1.2fr) minmax(125px, .95fr) minmax(105px, .8fr) minmax(125px, .9fr); }
+      .account-head span:last-child, .account .usage { grid-column: 2 / -1; }
+      .account .usage { padding: 0 0 12px; }
+      .account { min-height: 93px; padding-top: 12px; }
+    }
+    @media (max-width: 680px) {
+      .wrap { width: min(100% - 24px, 1480px); padding-top: 22px; }
+      .top { flex-direction: column; margin-bottom: 20px; }
+      .connection { width: 100%; }
+      .summary { gap: 9px; }
+      .metric { min-height: 78px; padding: 12px; gap: 9px; }
+      .metric-icon { width: 32px; height: 32px; flex-basis: 32px; }
+      .metric-icon svg { width: 16px; height: 16px; }
+      .metric-value { font-size: 19px; }
+      .assign { align-items: stretch; flex-direction: column; gap: 11px; padding: 14px; }
+      .assign-copy, .assign-controls { justify-content: space-between; }
+      .assign-controls { flex-wrap: wrap; }
+      .assign-controls select { flex: 1; min-width: 0; }
+      .status { text-align: left; }
+      .proxy-head { grid-template-columns: 1fr auto; gap: 12px; padding: 15px; }
+      .proxy-latency { grid-column: 1; text-align: left; }
+      .proxy-count { grid-column: 2; grid-row: 2; }
+      .proxy-action { grid-column: 1 / -1; }
+      .accounts { padding: 0 14px 4px; }
+      .account-head { display: none; }
+      .account { grid-template-columns: 24px minmax(0, 1fr) auto; gap: 9px; min-height: 0; padding: 14px 0; }
+      .account .status-cell { grid-column: 3; grid-row: 1; }
+      .account .group-cell { grid-column: 2 / -1; }
+      .account .schedule-cell { grid-column: 2 / -1; }
+      .account .usage { grid-column: 2 / -1; padding: 0; }
+      .status-cell small { max-width: 100px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="top">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3 4.5 6.2v5.1c0 4.6 3.1 7.9 7.5 9.7 4.4-1.8 7.5-5.1 7.5-9.7V6.2L12 3Z"></path>
+            <path d="m8.5 12 2.2 2.2 4.8-4.8"></path>
+          </svg>
+        </div>
+        <div>
+          <div class="eyebrow">Sub2API · Admin</div>
+          <h1 class="title">OAuth 账号管理</h1>
+          <div class="sub">代理、OpenAI OAuth 账号与调度状态</div>
+        </div>
+      </div>
+      <div class="connection" id="connection">
+        <span class="connection-dot pending" id="connectionDot"></span>
+        <div>
+          <strong id="connectionText">检查登录状态</strong>
+          <small>复用 Sub2API 同源登录态</small>
+        </div>
+      </div>
+    </header>
+
+    <section class="summary" aria-label="概览">
+      <div class="metric">
+        <div class="metric-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M7 9h.01M11 9h6M7 13h10"></path></svg>
+        </div>
+        <div><span class="metric-label">代理</span><strong class="metric-value" id="proxyCount">—</strong><span class="metric-note">已配置代理</span></div>
+      </div>
+      <div class="metric">
+        <div class="metric-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"></circle><path d="M3.5 19c.7-3 2.5-4.5 5.5-4.5s4.8 1.5 5.5 4.5M16 11a2.5 2.5 0 1 0 0-5M16 14.5c2.4 0 3.9 1.2 4.5 3.5"></path></svg>
+        </div>
+        <div><span class="metric-label">OAuth 账号</span><strong class="metric-value" id="accountCount">—</strong><span class="metric-note">OpenAI OAuth</span></div>
+      </div>
+      <div class="metric">
+        <div class="metric-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4.2 4.2L19 6.5"></path><circle cx="12" cy="12" r="9"></circle></svg>
+        </div>
+        <div><span class="metric-label">调度中</span><strong class="metric-value" id="scheduledCount">—</strong><span class="metric-note">参与账号调度</span></div>
+      </div>
+      <div class="metric">
+        <div class="metric-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2.8 19h18.4L12 3Z"></path><path d="M12 9v4.5M12 17h.01"></path></svg>
+        </div>
+        <div><span class="metric-label">需要关注</span><strong class="metric-value" id="attentionCount">—</strong><span class="metric-note">错误、限流或异常</span></div>
+      </div>
+    </section>
+
+    <section class="panel assign">
+      <div class="assign-copy">
+        <span class="section-kicker">批量操作</span>
+        <strong>移动选中的账号</strong>
+        <span id="selected" class="selected">已选 0 个账号</span>
+      </div>
+      <div class="assign-controls">
+        <select id="target" aria-label="选择目标代理">
+          <option value="">选择目标代理…</option>
+        </select>
+        <button class="primary" id="move" type="button" disabled>移动账号</button>
+        <span id="status" class="status" role="status"></span>
+      </div>
+    </section>
+
+    <div id="list" aria-live="polite">
+      <div class="loading-state">正在加载代理和账号…</div>
+    </div>
+  </main>
+
+  <script>
+    (() => {
+      const $ = (selector) => document.querySelector(selector);
+      const state = {
+        proxies: [],
+        groups: [],
+        accounts: [],
+        latency: {},
+        selected: new Set(),
+        loading: false
+      };
+
+      const statusLabels = {
+        active: '正常',
+        inactive: '已停用',
+        error: '错误',
+        expired: '已过期',
+        rate_limited: '限流中',
+        overloaded: '过载',
+        temp_unschedulable: '暂不可调度',
+        unknown: '未知状态'
+      };
+
+      const proxyStatusLabels = {
+        active: '运行中',
+        inactive: '已停用',
+        expired: '已过期',
+        error: '错误'
+      };
+
+      const escapeHTML = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[character]);
+
+      const unwrap = (json) => {
+        if (!json || json.code === undefined) return json;
+        if (json.code === 0) return json.data;
+        throw new Error(json.message || 'API 返回错误');
+      };
+
+      function readStorage(key) {
+        try {
+          return localStorage.getItem(key) || '';
+        } catch {
+          return '';
+        }
+      }
+
+      function readAuthToken() {
+        return readStorage('auth_token').trim();
+      }
+
+      let refreshingToken = null;
+      async function refreshAuthToken() {
+        if (refreshingToken) return refreshingToken;
+        const refreshToken = readStorage('refresh_token').trim();
+        if (!refreshToken) return false;
+
+        refreshingToken = (async () => {
+          try {
+            const response = await fetch('/api/v1/auth/refresh', {
+              method: 'POST',
+              credentials: 'include',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ refresh_token: refreshToken })
+            });
+            const json = await response.json();
+            if (!response.ok) return false;
+            const tokens = unwrap(json);
+            if (!tokens?.access_token) return false;
+            localStorage.setItem('auth_token', tokens.access_token);
+            if (tokens.refresh_token) localStorage.setItem('refresh_token', tokens.refresh_token);
+            if (tokens.expires_in) localStorage.setItem('token_expires_at', String(Date.now() + tokens.expires_in * 1000));
+            return true;
+          } catch {
+            return false;
+          }
+        })().finally(() => {
+          refreshingToken = null;
+        });
+        return refreshingToken;
+      }
+
+      async function api(path, options = {}, canRefresh = true) {
+        const token = readAuthToken();
+        if (!token) throw new Error('请先登录 Sub2API');
+        const response = await fetch('/api/v1' + path, {
+          ...options,
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + token,
+            ...(options.headers || {})
+          }
+        });
+        if (response.status === 401 && canRefresh && await refreshAuthToken()) return api(path, options, false);
+        let json;
+        try {
+          json = await response.json();
+        } catch {
+          throw new Error('服务器返回了非 JSON 内容（HTTP ' + response.status + '）');
+        }
+        if (!response.ok) throw new Error(json.message || json.error || ('HTTP ' + response.status));
+        return unwrap(json);
+      }
+
+      const arrayFrom = (value) => {
+        if (Array.isArray(value)) return value;
+        if (value && Array.isArray(value.items)) return value.items;
+        return [];
+      };
+
+      async function allPages(path, params = {}) {
+        let page = 1;
+        const result = [];
+        while (page <= 100) {
+          const query = new URLSearchParams({ ...params, page: String(page), page_size: '100' });
+          const data = await api(path + '?' + query);
+          const items = arrayFrom(data);
+          result.push(...items);
+          const totalPages = Number(data?.total_pages || data?.pages || 0);
+          if ((totalPages && page >= totalPages) || items.length < 100) break;
+          page += 1;
+        }
+        return result;
+      }
+
+      function proxyId(proxy) {
+        return proxy.id ?? proxy.proxy_id;
+      }
+
+      function proxyName(proxy) {
+        return proxy.name || proxy.host || ('代理 #' + proxyId(proxy));
+      }
+
+      function accountName(account) {
+        return account.name || account.email || account.account || ('账号 #' + account.id);
+      }
+
+      function accountGroups(account) {
+        const groupIDs = Array.isArray(account.group_ids)
+          ? account.group_ids
+          : (Array.isArray(account.groups) ? account.groups.map((group) => group.id) : []);
+        return groupIDs.map((id) => {
+          const group = state.groups.find((item) => String(item.id) === String(id));
+          return group || { id, name: '分组 #' + id };
+        });
+      }
+
+      function accountGroupsMarkup(account) {
+        const groups = accountGroups(account);
+        if (!groups.length) {
+          return '<div class="account-groups"><span class="account-groups-empty">未分组</span></div>';
+        }
+
+        const labels = groups.map((group) => group.name || ('分组 #' + group.id));
+        return '<div class="account-groups" title="' + escapeHTML(labels.join('、')) + '">' +
+          labels.map((label) => '<span class="account-group" title="' + escapeHTML(label) + '">' + escapeHTML(label) + '</span>').join('') +
+          '</div>';
+      }
+
+      function statusKey(value) {
+        return String(value || 'unknown').toLowerCase().replace(/[^a-z0-9_]+/g, '_');
+      }
+
+      function isFuture(value) {
+        if (!value) return false;
+        const timestamp = new Date(value).getTime();
+        return Number.isFinite(timestamp) && timestamp > Date.now();
+      }
+
+      function activeModelRateLimit(account) {
+        const modelLimits = account.extra?.model_rate_limits;
+        if (!modelLimits || typeof modelLimits !== 'object') return false;
+        return Object.values(modelLimits).some((item) => isFuture(item?.rate_limit_reset_at));
+      }
+
+      function accountStatus(account) {
+        let key = statusKey(account.status);
+        let detail = '';
+
+        if (isFuture(account.rate_limit_reset_at) || activeModelRateLimit(account)) {
+          key = 'rate_limited';
+          detail = account.rate_limit_reset_at ? '预计 ' + formatDate(account.rate_limit_reset_at) + ' 恢复' : '模型限流中';
+        } else if (isFuture(account.overload_until)) {
+          key = 'overloaded';
+          detail = '预计 ' + formatDate(account.overload_until) + ' 恢复';
+        } else if (isFuture(account.temp_unschedulable_until)) {
+          key = 'temp_unschedulable';
+          detail = '预计 ' + formatDate(account.temp_unschedulable_until) + ' 恢复';
+        }
+
+        if (!statusLabels[key]) {
+          key = 'unknown';
+          detail = account.status ? '原始状态：' + account.status : '';
+        }
+
+        if (key === 'error' && account.error_message) detail = account.error_message;
+        return { key, label: statusLabels[key], detail };
+      }
+
+      function formatDate(value) {
+        const date = new Date(value);
+        if (!Number.isFinite(date.getTime())) return '';
+        return date.toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+      }
+
+      function formatLatency(value) {
+        const number = Number(value);
+        return Number.isFinite(number) ? Math.round(number) + ' ms' : '未测试';
+      }
+
+      function latencyClass(value) {
+        if (value == null) return '';
+        return value < 300 ? 'good' : value < 800 ? 'warn' : 'bad';
+      }
+
+      function averageLatency(samples) {
+        const valid = samples.filter((sample) => Number.isFinite(sample));
+        return valid.length ? valid.reduce((sum, sample) => sum + sample, 0) / valid.length : null;
+      }
+
+      function latencyView(info) {
+        const samples = Array.isArray(info?.samples) ? info.samples : [];
+        const recent = samples.length ? samples.map((sample) => sample === null ? '失败' : formatLatency(sample)).join(' / ') : '未测试';
+        const main = info?.testing ? '测试中…' : '平均 ' + formatLatency(info?.average);
+        const detail = '近三次：' + recent + (info?.testing ? ' · ' + samples.length + '/3' : '');
+        return { main, detail };
+      }
+
+      async function testProxy(proxyID) {
+        const key = String(proxyID);
+        const samples = [];
+        let lastError = '';
+        state.latency[key] = { samples: [], average: null, testing: true, error: '' };
+        render();
+
+        for (let index = 0; index < 3; index += 1) {
+          try {
+            const data = await api('/admin/proxies/' + proxyID + '/test', { method: 'POST' });
+            const value = Number(data?.latency_ms ?? data?.latency);
+            if (Number.isFinite(value) && value >= 0) samples.push(value);
+            else {
+              samples.push(null);
+              lastError = '接口未返回有效延迟';
+            }
+          } catch (error) {
+            samples.push(null);
+            lastError = error.message || '代理测试失败';
+          }
+          state.latency[key] = {
+            samples: [...samples],
+            average: averageLatency(samples),
+            testing: index < 2,
+            error: lastError
+          };
+          render();
+        }
+        return state.latency[key];
+      }
+
+      async function testAllProxies() {
+        const proxies = state.proxies.filter((proxy) => proxyId(proxy) != null);
+        if (!proxies.length) return;
+        let finished = 0;
+        setStatus('正在测试代理延迟（0/' + proxies.length + '）', false, true);
+        await Promise.all(proxies.map(async (proxy) => {
+          await testProxy(proxyId(proxy));
+          finished += 1;
+          setStatus('正在测试代理延迟（' + finished + '/' + proxies.length + '）', false, true);
+        }));
+      }
+
+      function proxyStatus(proxy) {
+        const raw = statusKey(proxy.status);
+        return { raw, label: proxyStatusLabels[raw] || proxy.status || '未知状态' };
+      }
+
+      function usage(account) {
+        const extra = account.extra || {};
+        const percent = Number(extra.codex_7d_used_percent);
+        if (!Number.isFinite(percent)) {
+          return '<div class="usage"><div class="usage-top"><strong>暂无快照</strong><span>7d 用量</span></div><span class="usage-note">暂无已保存用量数据</span></div>';
+        }
+
+        const value = Math.max(0, Math.min(100, percent));
+        const resetAt = extra.codex_7d_reset_at ? formatDate(extra.codex_7d_reset_at) : '';
+        const updatedAt = extra.codex_usage_updated_at ? formatDate(extra.codex_usage_updated_at) : '';
+        const note = resetAt ? '重置 ' + resetAt : (updatedAt ? '更新 ' + updatedAt : '已保存快照');
+        return '<div class="usage" title="' + escapeHTML((updatedAt ? '更新：' + updatedAt + '；' : '') + (resetAt ? '重置：' + resetAt : '')) + '">' +
+          '<div class="usage-top"><strong>' + value.toFixed(1) + '%</strong><span>7d 已使用</span></div>' +
+          '<div class="usage-bar"><b style="width:' + value + '%"></b></div>' +
+          '<span class="usage-note">' + escapeHTML(note) + '</span></div>';
+      }
+
+      function accountUsagePercent(account) {
+        const value = Number(account.extra?.codex_7d_used_percent);
+        return Number.isFinite(value) ? value : null;
+      }
+
+      function sortedAccounts(accounts) {
+        return [...accounts].sort((left, right) => {
+          const scheduleOrder = Number(Boolean(right.schedulable)) - Number(Boolean(left.schedulable));
+          if (scheduleOrder) return scheduleOrder;
+
+          const leftUsage = accountUsagePercent(left);
+          const rightUsage = accountUsagePercent(right);
+          if (leftUsage == null && rightUsage != null) return 1;
+          if (leftUsage != null && rightUsage == null) return -1;
+          if (leftUsage != null && rightUsage != null && leftUsage !== rightUsage) return leftUsage - rightUsage;
+
+          return accountName(left).localeCompare(accountName(right), 'zh-CN') || Number(left.id) - Number(right.id);
+        });
+      }
+
+      function setStatus(message, isError = false, isLoading = false) {
+        const element = $('#status');
+        element.textContent = message;
+        element.className = 'status' + (isError ? ' error' : '') + (isLoading ? ' loading' : '');
+      }
+
+      function updateConnection() {
+        const dot = $('#connectionDot');
+        const text = $('#connectionText');
+        const loggedIn = Boolean(readAuthToken());
+        dot.classList.toggle('pending', !loggedIn);
+        text.textContent = loggedIn ? '登录态已就绪' : '请先登录 Sub2API';
+      }
+
+      function updateSummary() {
+        const statuses = state.accounts.map(accountStatus);
+        $('#proxyCount').textContent = String(state.proxies.length);
+        $('#accountCount').textContent = String(state.accounts.length);
+        $('#scheduledCount').textContent = String(state.accounts.filter((account) => account.schedulable).length);
+        $('#attentionCount').textContent = String(statuses.filter((status) => status.key !== 'active').length);
+      }
+
+      function render() {
+        const groups = new Map(state.proxies.map((proxy) => [String(proxyId(proxy)), { proxy, accounts: [] }]));
+        groups.set('uncategorized', { proxy: { id: null, name: '未分类' }, accounts: [] });
+
+        state.accounts.forEach((account) => {
+          const key = account.proxy_id == null ? 'uncategorized' : String(account.proxy_id);
+          if (!groups.has(key)) groups.set(key, { proxy: { id: account.proxy_id, name: '未分类' }, accounts: [] });
+          groups.get(key).accounts.push(account);
+        });
+
+        $('#target').innerHTML = '<option value="">选择目标代理…</option>' +
+          state.proxies.map((proxy) => '<option value="' + escapeHTML(proxyId(proxy)) + '">' + escapeHTML(proxyName(proxy)) + '</option>').join('') +
+          '<option value="__uncategorized">未分类（清除代理）</option>';
+
+        $('#list').innerHTML = [...groups.values()].map(({ proxy, accounts }) => {
+          const id = proxyId(proxy);
+          const key = id == null ? 'uncategorized' : String(id);
+          const latency = state.latency[key];
+          const latencyText = latencyView(latency);
+          const proxyState = proxyStatus(proxy);
+          const proxyMeta = id == null ? '' : '<div class="meta proxy-meta">ID ' + escapeHTML(id) + ' · 原始状态 ' + escapeHTML(proxyState.raw) + '</div>';
+          const latencyMarkup = id == null ? '' : '<div class="proxy-latency ' + latencyClass(latency?.average) + '"><strong>' + escapeHTML(latencyText.main) + '</strong><small>' + escapeHTML(latencyText.detail) + '</small></div>';
+          const actionMarkup = id == null ? '' : '<div class="proxy-action"><button type="button" data-test="' + escapeHTML(id) + '">重新测试</button></div>';
+          const sorted = sortedAccounts(accounts);
+          const accountRows = sorted.length ? sorted.map((account) => {
+            const accountState = accountStatus(account);
+            const name = accountName(account);
+            const detail = accountState.detail || (account.notes ? String(account.notes) : '');
+            return '<div class="account">' +
+              '<input class="account-check" type="checkbox" data-select="' + escapeHTML(account.id) + '" ' + (state.selected.has(String(account.id)) ? 'checked' : '') + ' aria-label="选择 ' + escapeHTML(name) + '">' +
+              '<div class="account-main"><div class="account-name" title="' + escapeHTML(name) + '">' + escapeHTML(name) + '<span class="account-id">#' + escapeHTML(account.id) + '</span></div><div class="account-detail">' + escapeHTML(account.platform === 'openai' ? 'OpenAI OAuth' : (account.platform || 'OAuth')) + '</div></div>' +
+              '<div class="group-cell">' + accountGroupsMarkup(account) + '</div>' +
+              '<div class="status-cell"><span class="badge ' + escapeHTML(accountState.key.replace(/_/g, '-')) + '" title="' + escapeHTML(accountState.detail) + '">' + escapeHTML(accountState.label) + '</span>' + (detail ? '<small title="' + escapeHTML(detail) + '">' + escapeHTML(detail) + '</small>' : '') + '</div>' +
+              '<div class="schedule-cell"><button class="schedule-button" type="button" data-schedule="' + escapeHTML(account.id) + '" title="' + (account.schedulable ? '暂停调度' : '启用调度') + '"><span class="switch ' + (account.schedulable ? 'on' : '') + '"><i></i></span><span class="schedule-label ' + (account.schedulable ? 'on' : '') + '">' + (account.schedulable ? '调度中' : '已暂停') + '</span></button></div>' +
+              usage(account) +
+              '</div>';
+          }).join('') : '<div class="empty"><strong>暂无账号</strong>该代理当前没有绑定 OpenAI OAuth 账号</div>';
+
+          const proxyStatusMarkup = id == null ? '<span class="proxy-status inactive">未绑定</span>' : '<span class="proxy-status ' + escapeHTML(proxyState.raw) + '">' + escapeHTML(proxyState.label) + '</span>';
+          const proxyDotClass = id == null ? 'inactive' : proxyState.raw;
+          return '<section class="panel proxy"><div class="proxy-head' + (id == null ? ' unbound' : '') + '">' +
+            '<div class="proxy-heading"><div class="proxy-name-line"><span class="proxy-dot ' + escapeHTML(proxyDotClass) + '"></span><span class="proxy-name" title="' + escapeHTML(proxyName(proxy)) + '">' + escapeHTML(proxyName(proxy)) + '</span>' + proxyStatusMarkup + '</div>' + proxyMeta + '</div>' +
+            latencyMarkup +
+            '<div class="proxy-count"><span class="count">' + sorted.length + '</span><span class="meta">OAuth 账号</span></div>' +
+            actionMarkup + '</div>' +
+            '<div class="accounts"><div class="account-head"><span></span><span>账号</span><span>分组</span><span>状态</span><span>调度</span><span>Codex 7d 用量</span></div>' + accountRows + '</div></section>';
+        }).join('');
+
+        $('#selected').textContent = '已选 ' + state.selected.size + ' 个账号';
+        $('#move').disabled = state.selected.size === 0;
+        updateSummary();
+      }
+
+      async function load() {
+        if (state.loading) return;
+        if (!readAuthToken()) {
+          updateConnection();
+          setStatus('请先登录 Sub2API', true);
+          $('#list').innerHTML = '<div class="loading-state"><strong>尚未检测到登录态</strong>请先登录 Sub2API，再打开本页面</div>';
+          return;
+        }
+
+        state.loading = true;
+        updateConnection();
+        setStatus('正在加载…', false, true);
+        $('#list').classList.add('loading');
+        try {
+          const [proxies, accounts, groupData] = await Promise.all([
+            allPages('/admin/proxies'),
+            allPages('/admin/accounts', { platform: 'openai', type: 'oauth', lite: '1' }),
+            api('/admin/groups/all?include_inactive=true')
+          ]);
+          state.proxies = proxies;
+          state.groups = arrayFrom(groupData);
+          state.accounts = accounts.filter((account) => String(account.platform || '').toLowerCase() === 'openai' && String(account.type || '').toLowerCase() === 'oauth');
+          state.selected = new Set([...state.selected].filter((id) => state.accounts.some((account) => String(account.id) === id)));
+          render();
+          await testAllProxies();
+          setStatus('已加载 ' + state.proxies.length + ' 个代理、' + state.groups.length + ' 个分组、' + state.accounts.length + ' 个 OpenAI OAuth 账号');
+        } catch (error) {
+          setStatus(error.message || '加载失败', true);
+          $('#list').innerHTML = '<div class="loading-state"><strong>数据加载失败</strong>' + escapeHTML(error.message || '请稍后重试') + '</div>';
+        } finally {
+          state.loading = false;
+          $('#list').classList.remove('loading');
+        }
+      }
+
+      $('#list').addEventListener('click', async (event) => {
+        const target = event.target.closest('button');
+        if (!target) return;
+
+        if (target.dataset.test) {
+          const id = target.dataset.test;
+          target.disabled = true;
+          const result = await testProxy(id);
+          if (!result.samples.some((sample) => Number.isFinite(sample))) alert(result.error || '代理测试失败');
+          target.disabled = false;
+          return;
+        }
+
+        if (target.dataset.schedule) {
+          const account = state.accounts.find((item) => String(item.id) === String(target.dataset.schedule));
+          if (!account) return;
+          target.disabled = true;
+          try {
+            const updated = await api('/admin/accounts/' + account.id + '/schedulable', {
+              method: 'POST',
+              body: JSON.stringify({ schedulable: !account.schedulable })
+            });
+            account.schedulable = updated?.schedulable ?? !account.schedulable;
+            render();
+          } catch (error) {
+            alert(error.message || '调度状态更新失败');
+          } finally {
+            target.disabled = false;
+          }
+        }
+      });
+
+      $('#list').addEventListener('change', (event) => {
+        if (!event.target.dataset.select) return;
+        const id = String(event.target.dataset.select);
+        if (event.target.checked) state.selected.add(id);
+        else state.selected.delete(id);
+        $('#selected').textContent = '已选 ' + state.selected.size + ' 个账号';
+        $('#move').disabled = state.selected.size === 0;
+      });
+
+      $('#move').addEventListener('click', async () => {
+        const ids = [...state.selected].map(Number);
+        const selectedTarget = $('#target').value;
+        if (!ids.length) return;
+        if (!selectedTarget) return alert('请选择目标代理');
+
+        const isUncategorized = selectedTarget === '__uncategorized';
+        const proxy = state.proxies.find((item) => String(proxyId(item)) === selectedTarget);
+        const targetName = isUncategorized ? '未分类（清除代理）' : (proxy ? proxyName(proxy) + '（ID ' + selectedTarget + '）' : selectedTarget);
+        const confirmation = '确认移动以下账号？\n账号 ID：' + ids.join('、') + '\n目标代理：' + targetName;
+        if (!confirm(confirmation)) return;
+
+        const button = $('#move');
+        button.disabled = true;
+        try {
+          await api('/admin/accounts/bulk-update', {
+            method: 'POST',
+            body: JSON.stringify({ account_ids: ids, proxy_id: isUncategorized ? null : Number(selectedTarget) })
+          });
+          state.selected.clear();
+          $('#target').value = '';
+          await load();
+        } catch (error) {
+          alert(error.message || '批量移动失败');
+        } finally {
+          button.disabled = false;
+        }
+      });
+
+      updateConnection();
+      updateSummary();
+      load();
+    })();
+  </script>
+</body>
+</html>
