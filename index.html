@@ -70,6 +70,15 @@
     .connection strong { font-size: 13px; }
     .connection small { margin-top: 1px; color: var(--muted); font-size: 11px; }
 
+    .tabs { display: flex; gap: 6px; margin-bottom: 18px; padding: 5px; background: rgba(255, 255, 255, .82); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); }
+    .tab { flex: 1 1 0; min-width: 0; padding: 10px 14px; color: var(--muted); background: transparent; border-color: transparent; font-size: 13px; font-weight: 700; white-space: nowrap; }
+    .tab:hover:not(:disabled) { color: var(--primary-dark); background: var(--primary-soft); border-color: transparent; }
+    .tab[aria-selected="true"] { color: var(--primary-dark); background: var(--primary-soft); border-color: #c9cdf8; box-shadow: 0 3px 8px rgba(88, 101, 217, .1); }
+    .tab:focus-visible { outline: 3px solid rgba(88, 101, 217, .16); outline-offset: 1px; }
+    .tab-panel[hidden] { display: none; }
+    .assign-add { flex: 0 0 auto; padding: 9px 12px; color: var(--primary-dark); background: var(--primary-soft); border-color: #c9cdf8; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .assign-add:hover:not(:disabled) { color: #fff; background: var(--primary); border-color: var(--primary); }
+
     .panel { background: rgba(255, 255, 255, .94); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
     .summary { display: grid; grid-template-columns: 1fr; gap: 14px; margin-bottom: 18px; }
     .pool-summary { display: grid; gap: 17px; padding: 18px 20px 20px; }
@@ -318,6 +327,8 @@
       .wrap { width: min(100% - 24px, 1480px); padding-top: 22px; }
       .top { flex-direction: column; margin-bottom: 20px; }
       .connection { width: 100%; }
+      .tabs { margin-bottom: 12px; overflow-x: auto; }
+      .tab { flex: 0 0 auto; min-width: 120px; }
       .summary { gap: 9px; }
       .pool-summary { gap: 14px; padding: 14px; }
       .pool-summary-head { gap: 10px; }
@@ -341,6 +352,7 @@
       .assign-toolbar { align-items: stretch; flex-direction: column; gap: 11px; padding: 14px 0; }
       .assign-copy, .assign-controls { justify-content: space-between; }
       .assign-controls { flex-wrap: wrap; }
+      .assign-add { flex: 1 1 auto; }
       .assign-controls select { flex: 1; min-width: 0; }
       .status { text-align: left; }
       .quick-dispatch { padding: 15px 14px 16px; }
@@ -386,11 +398,17 @@
           <strong id="connectionText">检查登录状态</strong>
           <small>复用 Sub2API 同源登录态</small>
         </div>
-        <button class="connection-action" id="quickAddButton" type="button" disabled>新增账号</button>
       </div>
     </header>
 
-    <section class="summary" aria-label="概览">
+    <nav class="tabs" id="tabs" role="tablist" aria-label="OAuth 管理功能">
+      <button class="tab" id="tab-quick" type="button" role="tab" data-tab="quick" aria-controls="panel-quick" aria-selected="true" tabindex="0">快速调度</button>
+      <button class="tab" id="tab-pool" type="button" role="tab" data-tab="pool" aria-controls="panel-pool" aria-selected="false" tabindex="-1">号池状态</button>
+      <button class="tab" id="tab-batch" type="button" role="tab" data-tab="batch" aria-controls="panel-batch" aria-selected="false" tabindex="-1">批量操作</button>
+    </nav>
+
+    <section class="tab-panel" id="panel-pool" data-tab-panel="pool" role="tabpanel" aria-labelledby="tab-pool" hidden>
+      <section class="summary" aria-label="号池状态">
       <section class="panel pool-summary" id="poolSummary" aria-label="号池状态">
         <div class="pool-summary-head">
           <div>
@@ -448,7 +466,10 @@
       </div>
     </section>
 
-    <section class="panel quick-dispatch" id="quickDispatch" aria-label="快速调度">
+    </section>
+
+    <section class="tab-panel" id="panel-quick" data-tab-panel="quick" role="tabpanel" aria-labelledby="tab-quick">
+      <section class="panel quick-dispatch" id="quickDispatch" aria-label="快速调度">
       <div class="quick-head">
         <div>
           <div class="section-kicker">快速调度</div>
@@ -468,7 +489,10 @@
       </div>
     </section>
 
-    <section class="panel assign" aria-label="批量操作">
+    </section>
+
+    <section class="tab-panel" id="panel-batch" data-tab-panel="batch" role="tabpanel" aria-labelledby="tab-batch" hidden>
+      <section class="panel assign" aria-label="批量操作">
       <div class="assign-toolbar">
         <div class="assign-copy">
           <span class="section-kicker">批量操作</span>
@@ -476,6 +500,7 @@
           <span id="selected" class="selected">已选 0 个账号</span>
         </div>
         <div class="assign-controls">
+          <button class="assign-add" id="quickAddButton" type="button" disabled>新增账号</button>
           <select id="target" aria-label="选择目标代理">
             <option value="">选择目标代理…</option>
           </select>
@@ -486,6 +511,7 @@
       <div id="list" aria-live="polite">
         <div class="loading-state">正在加载代理和账号…</div>
       </div>
+      </section>
     </section>
   </main>
 
@@ -577,6 +603,7 @@
         scheduleUpdating: new Set(),
         loading: false,
         loaded: false,
+        activeTab: 'quick',
         quickAdd: {
           proxyId: '',
           sessionId: '',
@@ -1307,6 +1334,30 @@
         });
       }
 
+      const tabOrder = ['quick', 'pool', 'batch'];
+
+      function setActiveTab(tabName, focus = false) {
+        const activeTab = tabOrder.includes(tabName) ? tabName : 'quick';
+        state.activeTab = activeTab;
+
+        document.querySelectorAll('[data-tab]').forEach((tab) => {
+          const isActive = tab.dataset.tab === activeTab;
+          tab.setAttribute('aria-selected', String(isActive));
+          tab.tabIndex = isActive ? 0 : -1;
+        });
+
+        document.querySelectorAll('[data-tab-panel]').forEach((panel) => {
+          const isActive = panel.dataset.tabPanel === activeTab;
+          panel.hidden = !isActive;
+          panel.setAttribute('aria-hidden', String(!isActive));
+        });
+
+        if (focus) {
+          const tab = document.querySelector('[data-tab="' + activeTab + '"]');
+          if (tab) tab.focus();
+        }
+      }
+
       function updateQuickGroupSummary() {
         const element = $('#quickSelected');
         if (!element) return;
@@ -2034,6 +2085,29 @@
         }
       }
 
+      $('#tabs').addEventListener('click', (event) => {
+        const tab = event.target.closest('[data-tab]');
+        if (tab) setActiveTab(tab.dataset.tab);
+      });
+
+      $('#tabs').addEventListener('keydown', (event) => {
+        const tab = event.target.closest('[data-tab]');
+        if (!tab) return;
+
+        const currentIndex = tabOrder.indexOf(tab.dataset.tab);
+        if (currentIndex < 0) return;
+
+        let nextIndex = currentIndex;
+        if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % tabOrder.length;
+        else if (event.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + tabOrder.length) % tabOrder.length;
+        else if (event.key === 'Home') nextIndex = 0;
+        else if (event.key === 'End') nextIndex = tabOrder.length - 1;
+        else return;
+
+        event.preventDefault();
+        setActiveTab(tabOrder[nextIndex], true);
+      });
+
       $('#quickAddButton').addEventListener('click', openQuickAdd);
 
       $('#quickAddProxy').addEventListener('change', async (event) => {
@@ -2139,6 +2213,7 @@
         }
       });
 
+      setActiveTab(state.activeTab);
       updateConnection();
       updateSummary();
       load();
