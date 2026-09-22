@@ -113,6 +113,8 @@
     .pool-recovery-axis-title { fill: var(--muted); font-size: 10px; }
     .pool-recovery-bar { fill: var(--warning); transition: fill .18s ease; }
     .pool-recovery-bar:hover { fill: #ad6911; }
+    .pool-recovery-bar.unknown { fill: #aeb7c5; }
+    .pool-recovery-bar.unknown:hover { fill: #8994a5; }
     .pool-recovery-count { fill: var(--text); font-family: inherit; font-size: 10px; font-weight: 700; }
     .pool-recovery-empty { min-height: 126px; display: grid; place-items: center; padding: 14px; color: var(--subtle); background: var(--surface-soft); border-radius: 8px; font-size: 11px; text-align: center; }
     .metric {
@@ -214,14 +216,31 @@
     .quick-account-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; }
     .quick-account { position: relative; display: grid; width: 100%; aspect-ratio: 1; place-items: center; min-width: 0; padding: 2px; overflow: hidden; color: #667085; background: var(--gray-soft); border: 1px solid #e0e4ea; border-radius: 7px; box-shadow: none; transition: .18s ease; }
     .quick-account:hover:not(:disabled) { color: #59656f; background: #e8ebef; border-color: #cbd2dd; transform: translateY(-1px); }
-    .quick-account.on { color: var(--success); background: var(--success-soft); border-color: #bcebd8; }
-    .quick-account.on:hover:not(:disabled) { color: #107a57; background: #dcf5e9; border-color: #91dbbd; }
+    /* 三档分级：tier-active 调度中（可用）/ tier-paused 已暂停（可启用）/ tier-warn、tier-error 限流或额度 ≥ 90%（不建议启用） */
+    .quick-account.off { border-style: dashed; }
+    .quick-account.tier-active { color: var(--success); background: var(--success-soft); border-color: #9fdcc2; }
+    .quick-account.tier-active:hover:not(:disabled) { color: #107a57; background: #dcf5e9; border-color: #6fcaa6; }
+    .quick-account.tier-paused { color: var(--primary-dark); background: var(--primary-soft); border-color: #b8bef4; }
+    .quick-account.tier-paused:hover:not(:disabled) { color: #3a45b0; background: #e3e6ff; border-color: #98a1ee; }
+    .quick-account.tier-warn { color: var(--warning); background: #ffedc7; border-color: #e5bd6d; }
+    .quick-account.tier-warn:hover:not(:disabled) { color: #a96710; background: #ffe3a6; border-color: #d4a648; }
+    .quick-account.tier-error { color: var(--danger); background: #ffe1e5; border-color: #e9a3ad; }
+    .quick-account.tier-error:hover:not(:disabled) { color: #b83d4d; background: #ffd3d9; border-color: #df8d98; }
+    .quick-legend { display: flex; flex-wrap: wrap; gap: 6px 12px; margin: 8px 0 0; padding: 0; list-style: none; color: var(--muted); font-size: 11px; }
+    .quick-legend li { display: inline-flex; align-items: center; gap: 5px; }
+    .quick-legend i { width: 12px; height: 12px; flex: 0 0 12px; border: 1px solid transparent; border-radius: 3px; }
+    .quick-legend i.tier-active { background: var(--success-soft); border-color: #9fdcc2; }
+    .quick-legend i.tier-paused { background: var(--primary-soft); border-color: #b8bef4; border-style: dashed; }
+    .quick-legend i.tier-warn { background: #ffedc7; border-color: #e5bd6d; }
+    .quick-legend i.tier-error { background: #ffe1e5; border-color: #e9a3ad; }
     .quick-account-status { position: absolute; top: 3px; right: 3px; z-index: 1; display: inline-flex; align-items: center; gap: 2px; max-width: calc(100% - 6px); font-size: 8px; font-weight: 760; line-height: 1; white-space: nowrap; }
     .quick-account-status i { width: 4px; height: 4px; flex: 0 0 4px; border-radius: 50%; background: currentColor; }
     .quick-account-status.normal { color: var(--success); }
     .quick-account-status.limited { color: var(--warning); }
     .quick-account-status.error { color: var(--danger); }
-    .quick-account-percent { min-width: 0; max-width: 100%; padding: 0 1px; font-size: 10px; font-weight: 760; line-height: 1.1; white-space: nowrap; }
+    .quick-account-usage { position: relative; display: grid; width: 36px; height: 36px; place-items: center; background: conic-gradient(var(--usage-color, #cbd2dd) var(--usage-percent, 0%), #edf0f5 0); border-radius: 50%; }
+    .quick-account-usage::before { position: absolute; width: 27px; height: 27px; content: ''; background: #fff; border-radius: 50%; }
+    .quick-account-usage strong { position: relative; z-index: 1; color: var(--text); font-size: 8px; font-weight: 760; line-height: 1; }
     .quick-card-empty { grid-column: 1 / -1; padding: 12px 4px 10px; color: var(--subtle); font-size: 11px; }
 
     #list { display: grid; gap: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
@@ -414,7 +433,7 @@
           <div>
             <div class="section-kicker">号池状态</div>
             <h2 class="pool-summary-title">OAuth 账号池</h2>
-            <p class="pool-summary-description">可用数 = 总数 − 限流 − 错误；暂不可调度账号计入限流。</p>
+            <p class="pool-summary-description">可用数 = 总数 − 限流 − 错误；暂不可调度账号计入限流。7d 使用率 ≥ 90% 的账号也视为限流。</p>
           </div>
         </div>
         <div class="pool-summary-metrics">
@@ -474,7 +493,13 @@
         <div>
           <div class="section-kicker">快速调度</div>
           <h2 class="quick-title">按分组快速切换账号调度</h2>
-          <p class="quick-description">绿色为调度中，灰色为暂停中；点击方块即可切换。</p>
+          <p class="quick-description">账号环形图显示 7d 用量；点击方块即可切换。</p>
+          <ul class="quick-legend" aria-label="方块颜色说明">
+            <li><i class="tier-active" aria-hidden="true"></i>绿色：调度中，可用</li>
+            <li><i class="tier-paused" aria-hidden="true"></i>蓝色虚框：已暂停，可启用</li>
+            <li><i class="tier-warn" aria-hidden="true"></i>橙色：限流或额度 ≥ 90%，不建议启用</li>
+            <li><i class="tier-error" aria-hidden="true"></i>红色：账号异常，不建议启用</li>
+          </ul>
         </div>
         <span class="quick-selected" id="quickSelected">已选 0 个分组</span>
       </div>
@@ -819,17 +844,39 @@
         return Object.values(modelLimits).some((item) => isFuture(item?.rate_limit_reset_at));
       }
 
+      function accountUsagePercent(account) {
+        const value = Number(account.extra?.codex_7d_used_percent);
+        return Number.isFinite(value) ? value : null;
+      }
+
+      function accountUsageIsLimited(account) {
+        const percent = accountUsagePercent(account);
+        return percent != null && percent >= 90;
+      }
+
       function accountStatus(account) {
-        let key = statusKey(account.status);
+        const rawKey = statusKey(account.status);
+        const rateLimitActive = isFuture(account.rate_limit_reset_at);
+        const modelRateLimitActive = activeModelRateLimit(account);
+        const usageLimited = accountUsageIsLimited(account);
+        let key = rawKey;
         let detail = '';
 
-        if (isFuture(account.rate_limit_reset_at) || activeModelRateLimit(account)) {
+        if (rawKey !== 'error' && (rateLimitActive || modelRateLimitActive || usageLimited)) {
           key = 'rate_limited';
-          detail = account.rate_limit_reset_at ? '预计 ' + formatDate(account.rate_limit_reset_at) + ' 恢复' : '模型限流中';
-        } else if (isFuture(account.overload_until)) {
+          if (rateLimitActive) {
+            detail = '预计 ' + formatDate(account.rate_limit_reset_at) + ' 恢复';
+          } else if (modelRateLimitActive) {
+            detail = '模型限流中';
+          } else {
+            const resetAt = account.extra?.codex_7d_reset_at;
+            detail = '7d 使用率 ' + formatUsagePercent(accountUsagePercent(account));
+            if (isFuture(resetAt)) detail += '，预计 ' + formatDate(resetAt) + ' 恢复';
+          }
+        } else if (rawKey !== 'error' && isFuture(account.overload_until)) {
           key = 'overloaded';
           detail = '预计 ' + formatDate(account.overload_until) + ' 恢复';
-        } else if (isFuture(account.temp_unschedulable_until)) {
+        } else if (rawKey !== 'error' && isFuture(account.temp_unschedulable_until)) {
           key = 'temp_unschedulable';
           detail = '预计 ' + formatDate(account.temp_unschedulable_until) + ' 恢复';
         }
@@ -868,6 +915,7 @@
         addTimestamp(account.rate_limit_reset_at);
         addTimestamp(account.overload_until);
         addTimestamp(account.temp_unschedulable_until);
+        if (poolAccountIsLimited(account)) addTimestamp(account.extra?.codex_7d_reset_at);
         const modelLimits = account.extra?.model_rate_limits;
         if (modelLimits && typeof modelLimits === 'object') {
           Object.values(modelLimits).forEach((item) => addTimestamp(item?.rate_limit_reset_at));
@@ -918,6 +966,17 @@
           return { key: 'limited', label: '限流' };
         }
         return { key: 'error', label: '错误' };
+      }
+
+      // 快速调度方块三档分级：调度中（可用）/ 已暂停（可启用）/ 限流或额度 ≥ 90% 或错误（不建议启用）
+      function quickAccountTier(account, accountState) {
+        const quickStatus = quickAccountStatus(accountState || accountStatus(account));
+        const percent = accountUsagePercent(account);
+        if (quickStatus.key === 'error') return { key: 'error', label: '不建议启用', reason: '账号异常' };
+        if (quickStatus.key === 'limited') return { key: 'warn', label: '不建议启用', reason: '限流中' };
+        if (percent != null && percent >= 90) return { key: 'warn', label: '不建议启用', reason: '7d 额度已用 ' + formatUsagePercent(percent) };
+        if (account.schedulable) return { key: 'active', label: '可用', reason: '调度中' };
+        return { key: 'paused', label: '可启用', reason: '已暂停' };
       }
 
       function formatDate(value) {
@@ -1286,6 +1345,10 @@
         return { raw, label: proxyStatusLabels[raw] || proxy.status || '未知状态' };
       }
 
+      function usageColor(value) {
+        return value >= 90 ? '#d34f5f' : (value >= 70 ? '#c77b15' : '#15966c');
+      }
+
       function usage(account) {
         const extra = account.extra || {};
         const percent = Number(extra.codex_7d_used_percent);
@@ -1297,7 +1360,7 @@
         const resetAt = extra.codex_7d_reset_at ? formatDate(extra.codex_7d_reset_at) : '';
         const updatedAt = extra.codex_usage_updated_at ? formatDate(extra.codex_usage_updated_at) : '';
         const note = resetAt ? '重置 ' + resetAt : (updatedAt ? '更新 ' + updatedAt : '已保存快照');
-        const color = value >= 90 ? '#d34f5f' : (value >= 70 ? '#c77b15' : '#15966c');
+        const color = usageColor(value);
         return '<div class="usage" title="' + escapeHTML((updatedAt ? '更新：' + updatedAt + '；' : '') + (resetAt ? '重置：' + resetAt : '')) + '">' +
           '<span class="usage-ring" style="--usage-percent:' + value + '%;--usage-color:' + color + '" aria-label="7d 已使用 ' + escapeHTML(formatUsagePercent(value)) + '"><strong>' + formatUsagePercent(value) + '</strong></span>' +
           '<span class="usage-copy"><strong>7d 已使用</strong><small>' + escapeHTML(note) + '</small></span></div>';
@@ -1312,11 +1375,6 @@
       function formatUsagePercent(value) {
         const number = clampUsagePercent(value);
         return number == null ? '—' : Math.round(number) + '%';
-      }
-
-      function accountUsagePercent(account) {
-        const value = Number(account.extra?.codex_7d_used_percent);
-        return Number.isFinite(value) ? value : null;
       }
 
       function sortedAccounts(accounts) {
@@ -1408,11 +1466,22 @@
         return formatUsagePercent(percent);
       }
 
+      function quickUsageMarkup(account) {
+        const percent = accountUsagePercent(account);
+        if (percent == null) {
+          return '<span class="quick-account-usage" aria-label="暂无 7d 用量快照"><strong>—</strong></span>';
+        }
+
+        const value = clampUsagePercent(percent);
+        return '<span class="quick-account-usage" style="--usage-percent:' + value + '%;--usage-color:' + usageColor(value) + '" aria-label="7d 已使用 ' + escapeHTML(formatUsagePercent(value)) + '"><strong>' + formatUsagePercent(value) + '</strong></span>';
+      }
+
       function quickAccountTitle(account) {
         const accountState = accountStatus(account);
         const quickStatus = quickAccountStatus(accountState);
+        const tier = quickAccountTier(account, accountState);
         const detail = accountState.detail ? '；' + accountState.detail : '';
-        return (account.schedulable ? '调度中' : '已暂停') + ' · ' + accountName(account) + '（#' + account.id + '） · 状态 ' + quickStatus.label + ' · 7d 用量 ' + quickUsageLabel(account) + detail;
+        return tier.label + '（' + tier.reason + '） · ' + (account.schedulable ? '调度中' : '已暂停') + ' · ' + accountName(account) + '（#' + account.id + '） · 状态 ' + quickStatus.label + ' · 7d 用量 ' + quickUsageLabel(account) + detail;
       }
 
       function accountTileTitle(account) {
@@ -1449,8 +1518,8 @@
             const updating = state.scheduleUpdating.has(accountID);
             const accountState = accountStatus(account);
             const quickStatus = quickAccountStatus(accountState);
-            const usageLabel = quickUsageLabel(account);
-            return '<button class="quick-account ' + (account.schedulable ? 'on' : 'off') + '" type="button" data-quick-schedule="' + escapeHTML(accountID) + '" title="' + escapeHTML(quickAccountTitle(account)) + '" aria-label="' + escapeHTML(quickAccountTitle(account)) + '"' + (updating ? ' disabled aria-busy="true"' : '') + '><span class="quick-account-status ' + escapeHTML(quickStatus.key) + '" title="' + escapeHTML(accountState.detail || quickStatus.label) + '"><i aria-hidden="true"></i><span>' + escapeHTML(quickStatus.label) + '</span></span><span class="quick-account-percent">' + escapeHTML(usageLabel) + '</span></button>';
+            const tier = quickAccountTier(account, accountState);
+            return '<button class="quick-account ' + (account.schedulable ? 'on ' : 'off ') + 'status-' + escapeHTML(quickStatus.key) + ' tier-' + escapeHTML(tier.key) + '" type="button" data-quick-schedule="' + escapeHTML(accountID) + '" data-tier="' + escapeHTML(tier.key) + '" title="' + escapeHTML(quickAccountTitle(account)) + '" aria-label="' + escapeHTML(quickAccountTitle(account)) + '"' + (updating ? ' disabled aria-busy="true"' : '') + '><span class="quick-account-status ' + escapeHTML(quickStatus.key) + '" title="' + escapeHTML(accountState.detail || quickStatus.label) + '"><i aria-hidden="true"></i><span>' + escapeHTML(quickStatus.label) + '</span></span>' + quickUsageMarkup(account) + '</button>';
           }).join('') : '<div class="quick-card-empty">' + escapeHTML(emptyText) + '</div>';
 
           return '<article class="quick-card">' +
@@ -1747,6 +1816,7 @@
               proxy_id: proxyValue,
               concurrency,
               priority,
+              schedulable: false,
               extra: fingerprintMode === 'off' ? {} : { codex_fingerprint_mode: fingerprintMode },
               group_ids: groupIDs
             })
@@ -1878,9 +1948,12 @@
       }
 
       function poolRecoveryChartMarkup(stats) {
-        const entries = [...stats.recoveryByDays.entries()].sort((left, right) => left[0] - right[0]);
+        const entries = [...stats.recoveryByDays.entries()]
+          .sort((left, right) => left[0] - right[0])
+          .map(([days, count]) => ({ days, count, unknown: false }));
+        if (stats.unknownRecoveryCount) entries.push({ days: null, count: stats.unknownRecoveryCount, unknown: true });
         if (!entries.length) {
-          return '<div class="pool-recovery-empty">' + (stats.unknownRecoveryCount ? '限流或暂不可调度账号暂无有效恢复时间' : '暂无明确恢复周期的账号') + '</div>';
+          return '<div class="pool-recovery-empty">暂无明确恢复周期的账号</div>';
         }
 
         const chartWidth = Math.max(460, entries.length * 58 + 62);
@@ -1888,7 +1961,7 @@
         const plot = { left: 43, right: chartWidth - 18, top: 20, bottom: 180 };
         const plotWidth = plot.right - plot.left;
         const plotHeight = plot.bottom - plot.top;
-        const maxCount = Math.max(...entries.map((entry) => entry[1]));
+        const maxCount = Math.max(...entries.map((entry) => entry.count));
         const yMax = Math.max(4, Math.ceil(maxCount / 4) * 4);
         const yTicks = Array.from({ length: 5 }, (_, index) => {
           const value = yMax * (1 - index / 4);
@@ -1898,24 +1971,27 @@
         }).join('');
         const slotWidth = plotWidth / entries.length;
         const barWidth = Math.min(40, Math.max(18, slotWidth * .62));
-        const bars = entries.map(([days, count], index) => {
+        const bars = entries.map((entry, index) => {
+          const label = entry.unknown ? '未知' : entry.days + '天';
+          const title = entry.unknown ? '恢复时间未知：' : '剩余 ' + entry.days + ' 天：';
+          const barClass = entry.unknown ? 'pool-recovery-bar unknown' : 'pool-recovery-bar';
           const x = plot.left + index * slotWidth + (slotWidth - barWidth) / 2;
-          const y = plot.bottom - count / yMax * plotHeight;
+          const y = plot.bottom - entry.count / yMax * plotHeight;
           const height = Math.max(1, plot.bottom - y);
-          return '<g><title>剩余 ' + escapeHTML(days) + ' 天：' + escapeHTML(count) + ' 个账号</title>' +
-            '<rect class="pool-recovery-bar" x="' + svgNumber(x) + '" y="' + svgNumber(y) + '" width="' + svgNumber(barWidth) + '" height="' + svgNumber(height) + '" rx="4"></rect>' +
-            '<text class="pool-recovery-count" x="' + svgNumber(x + barWidth / 2) + '" y="' + svgNumber(Math.max(plot.top + 11, y - 6)) + '" text-anchor="middle">' + escapeHTML(count) + '</text>' +
-            '<text class="pool-recovery-label" x="' + svgNumber(x + barWidth / 2) + '" y="198" text-anchor="middle">' + escapeHTML(days) + '天</text></g>';
+          return '<g><title>' + escapeHTML(title) + escapeHTML(entry.count) + ' 个账号</title>' +
+            '<rect class="' + barClass + '" x="' + svgNumber(x) + '" y="' + svgNumber(y) + '" width="' + svgNumber(barWidth) + '" height="' + svgNumber(height) + '" rx="4"></rect>' +
+            '<text class="pool-recovery-count" x="' + svgNumber(x + barWidth / 2) + '" y="' + svgNumber(Math.max(plot.top + 11, y - 6)) + '" text-anchor="middle">' + escapeHTML(entry.count) + '</text>' +
+            '<text class="pool-recovery-label" x="' + svgNumber(x + barWidth / 2) + '" y="198" text-anchor="middle">' + escapeHTML(label) + '</text></g>';
         }).join('');
         const chartStyle = entries.length > 7 ? ' style="width:' + chartWidth + 'px;max-width:none"' : '';
 
-        return '<svg class="pool-recovery-chart"' + chartStyle + ' viewBox="0 0 ' + chartWidth + ' ' + chartHeight + '" role="img" aria-label="账号恢复剩余天数分布图，横轴为剩余恢复天数，纵轴为账号个数">' +
+        return '<svg class="pool-recovery-chart"' + chartStyle + ' viewBox="0 0 ' + chartWidth + ' ' + chartHeight + '" role="img" aria-label="账号恢复分布图，包含剩余天数和未知恢复时间，纵轴为账号个数">' +
           yTicks +
           '<line class="pool-recovery-axis" x1="' + plot.left + '" y1="' + plot.top + '" x2="' + plot.left + '" y2="' + plot.bottom + '"></line>' +
           '<line class="pool-recovery-axis" x1="' + plot.left + '" y1="' + plot.bottom + '" x2="' + plot.right + '" y2="' + plot.bottom + '"></line>' +
           bars +
           '<text class="pool-recovery-axis-title" transform="rotate(-90 12 104)" x="12" y="104" text-anchor="middle">账号个数</text>' +
-          '<text class="pool-recovery-axis-title" x="' + svgNumber((plot.left + plot.right) / 2) + '" y="231" text-anchor="middle">剩余恢复天数</text>' +
+          '<text class="pool-recovery-axis-title" x="' + svgNumber((plot.left + plot.right) / 2) + '" y="231" text-anchor="middle">剩余恢复天数（未知）</text>' +
           '</svg>';
       }
 
@@ -1946,7 +2022,8 @@
         available.textContent = String(stats.available);
         limited.textContent = String(stats.limited);
         unavailable.textContent = String(stats.unavailable);
-        note.textContent = stats.recoveryAccountCount ? '已纳入 ' + stats.recoveryAccountCount + ' 个有恢复周期的账号' : '暂无明确恢复周期';
+        const recoveryCount = stats.recoveryAccountCount + stats.unknownRecoveryCount;
+        note.textContent = recoveryCount ? '已纳入 ' + recoveryCount + ' 个账号' : '暂无明确恢复周期';
         unknown.textContent = stats.unknownRecoveryCount ? '未知恢复时间 ' + stats.unknownRecoveryCount + ' 个' : '';
         chart.innerHTML = poolRecoveryChartMarkup(stats);
       }
