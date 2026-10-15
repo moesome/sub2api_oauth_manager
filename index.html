@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f5f7fb">
-  <title>OAuth 管理 · Sub2API</title>
+  <title>号池管理</title>
   <style>
     :root {
       color-scheme: light;
@@ -48,7 +48,7 @@
     button:disabled { cursor: not-allowed; opacity: .55; }
 
     .wrap { width: min(1480px, calc(100% - 40px)); margin: 0 auto; padding: 34px 0 64px; }
-    .top { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 28px; }
+    .top { display: flex; align-items: flex-start; gap: 24px; margin-bottom: 20px; }
     .brand { display: flex; align-items: flex-start; gap: 14px; }
     .brand-icon {
       display: grid; width: 44px; height: 44px; flex: 0 0 44px; place-items: center; color: #fff;
@@ -56,19 +56,7 @@
       box-shadow: 0 8px 18px rgba(88, 101, 217, .24);
     }
     .brand-icon svg { width: 23px; height: 23px; }
-    .eyebrow { margin: 1px 0 5px; color: var(--primary); font-size: 11px; font-weight: 750; letter-spacing: .16em; text-transform: uppercase; }
     .title { margin: 0; color: var(--text); font-size: clamp(25px, 3vw, 32px); font-weight: 760; letter-spacing: -.035em; line-height: 1.15; }
-    .sub { margin-top: 7px; color: var(--muted); font-size: 13px; }
-    .connection {
-      display: flex; align-items: center; gap: 11px; min-width: 190px; padding: 12px 15px;
-      background: rgba(255, 255, 255, .8); border: 1px solid rgba(215, 222, 233, .9); border-radius: 14px;
-      box-shadow: 0 5px 18px rgba(38, 52, 77, .04);
-    }
-    .connection-dot { width: 9px; height: 9px; flex: 0 0 9px; background: var(--success); border-radius: 50%; box-shadow: 0 0 0 4px var(--success-soft); }
-    .connection-dot.pending { background: var(--warning); box-shadow: 0 0 0 4px var(--warning-soft); }
-    .connection strong, .connection small { display: block; }
-    .connection strong { font-size: 13px; }
-    .connection small { margin-top: 1px; color: var(--muted); font-size: 11px; }
 
     .tabs { display: flex; gap: 6px; margin-bottom: 18px; padding: 5px; background: rgba(255, 255, 255, .82); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); }
     .tab { flex: 1 1 0; min-width: 0; padding: 10px 14px; color: var(--muted); background: transparent; border-color: transparent; font-size: 13px; font-weight: 700; white-space: nowrap; }
@@ -131,9 +119,6 @@
     .metric-note { margin-top: 2px; color: var(--subtle); font-size: 11px; }
     .metric-action { flex: 0 0 auto; margin-left: auto; padding: 7px 9px; color: var(--primary-dark); background: var(--primary-soft); border-color: #c9cdf8; font-size: 11px; font-weight: 700; white-space: nowrap; }
     .metric-action:hover:not(:disabled) { color: #fff; background: var(--primary); border-color: var(--primary); }
-    .connection-action { flex: 0 0 auto; margin-left: auto; padding: 7px 10px; color: var(--primary-dark); background: var(--primary-soft); border-color: #c9cdf8; font-size: 11px; font-weight: 700; white-space: nowrap; }
-    .connection-action:hover:not(:disabled) { color: #fff; background: var(--primary); border-color: var(--primary); }
-
     .proxy-summary { grid-column: 1 / -1; display: block; padding: 18px 20px 20px; }
     .proxy-summary-head { display: flex; align-items: center; gap: 12px; }
     .proxy-summary-head .metric-icon { flex: 0 0 38px; }
@@ -154,6 +139,23 @@
     .proxy-summary-token-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
     .proxy-summary-token-head strong { color: var(--muted); font-size: 10px; font-weight: 700; }
     .proxy-summary-token-head small { color: var(--subtle); font-size: 9px; }
+    .proxy-summary-comparison { min-width: 0; margin-top: 16px; padding: 13px 14px 10px; background: linear-gradient(180deg, #fff, #fbfcff); border: 1px solid var(--line); border-radius: 12px; }
+    .proxy-summary-comparison-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+    .proxy-summary-comparison-head strong { color: var(--text); font-size: 12px; font-weight: 720; }
+    .proxy-summary-comparison-head small { color: var(--subtle); font-size: 10px; }
+    .proxy-summary-range-controls { display: inline-flex; align-items: center; gap: 3px; padding: 2px; background: #f0f2f8; border-radius: 7px; }
+    .proxy-summary-range-button { padding: 4px 7px; color: var(--muted); background: transparent; border: 0; border-radius: 5px; font: inherit; font-size: 10px; line-height: 1.2; cursor: pointer; }
+    .proxy-summary-range-button[aria-pressed="true"] { color: var(--primary); background: #fff; box-shadow: 0 1px 3px #17233b1a; font-weight: 700; }
+    .proxy-summary-range-button:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+    .proxy-summary-range-controls-wrap { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 7px; }
+    .proxy-summary-comparison-legend { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 9px; }
+    .proxy-summary-comparison-legend-item { display: inline-flex; align-items: center; gap: 5px; max-width: 240px; min-width: 0; color: var(--muted); font-size: 10px; }
+    .proxy-summary-comparison-legend-item > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .proxy-summary-comparison-swatch { width: 13px; height: 3px; flex: 0 0 13px; border-radius: 2px; }
+    .proxy-summary-comparison-chart-scroll { min-width: 0; overflow-x: auto; }
+    .proxy-summary-comparison-chart { display: block; width: 100%; min-width: 540px; margin-top: 3px; overflow: visible; }
+    .proxy-summary-comparison-chart-path { fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
+    .proxy-summary-comparison-point { stroke: #fff; stroke-width: 1; }
     .proxy-summary-chart-wrap { min-width: 0; margin-top: 7px; }
     .proxy-summary-chart-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; color: var(--muted); font-size: 10px; }
     .proxy-summary-chart-legend-item { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
@@ -168,6 +170,13 @@
     .proxy-summary-chart-axis-title { fill: var(--muted); font-size: 9px; }
     .proxy-summary-chart-path { fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
     .proxy-summary-chart-empty { min-height: 118px; display: grid; place-items: center; padding: 14px; color: var(--subtle); background: var(--surface-soft); border-radius: 8px; font-size: 11px; text-align: center; }
+    .first-token-progress { display: grid; width: min(100%, 420px); gap: 8px; text-align: left; }
+    .first-token-progress-track { height: 7px; overflow: hidden; background: #e8ebf3; border-radius: 999px; }
+    .first-token-progress-fill { display: block; width: 0; height: 100%; background: var(--primary); border-radius: inherit; transition: width .18s ease; }
+    .first-token-progress-track.indeterminate .first-token-progress-fill { width: 38%; animation: first-token-progress-slide 1.15s ease-in-out infinite alternate; }
+    .first-token-progress small { color: var(--subtle); font-size: 10px; }
+    @keyframes first-token-progress-slide { from { transform: translateX(-105%); } to { transform: translateX(265%); } }
+    @media (prefers-reduced-motion: reduce) { .first-token-progress-track.indeterminate .first-token-progress-fill { width: 100%; opacity: .45; animation: none; } }
     .proxy-summary-empty { grid-column: 1 / -1; padding: 10px 0 2px; color: var(--subtle); font-size: 12px; }
 
     .assign { margin-bottom: 22px; padding: 0 18px 18px; }
@@ -238,9 +247,12 @@
     .quick-account-status.normal { color: var(--success); }
     .quick-account-status.limited { color: var(--warning); }
     .quick-account-status.error { color: var(--danger); }
-    .quick-account-usage { position: relative; display: grid; width: 36px; height: 36px; place-items: center; background: conic-gradient(var(--usage-color, #cbd2dd) var(--usage-percent, 0%), #edf0f5 0); border-radius: 50%; }
-    .quick-account-usage::before { position: absolute; width: 27px; height: 27px; content: ''; background: #fff; border-radius: 50%; }
-    .quick-account-usage strong { position: relative; z-index: 1; color: var(--text); font-size: 8px; font-weight: 760; line-height: 1; }
+    .quick-account-usage { position: relative; display: grid; width: 28px; height: 28px; place-items: center; background: conic-gradient(var(--usage-color, #cbd2dd) var(--usage-percent, 0%), #edf0f5 0); border-radius: 50%; }
+    .quick-account.has-reset .quick-account-usage { transform: translateY(-4px); }
+    .quick-account-usage::before { position: absolute; width: 21px; height: 21px; content: ''; background: #fff; border-radius: 50%; }
+    .quick-account-usage strong { position: relative; z-index: 1; color: var(--text); font-size: 7px; font-weight: 760; line-height: 1; }
+    .quick-account-reset { position: absolute; right: 2px; bottom: 2px; z-index: 2; max-width: calc(100% - 4px); padding: 2px 3px; overflow: hidden; color: var(--muted); background: rgba(255, 255, 255, .92); border: 1px solid rgba(215, 222, 233, .9); border-radius: 4px; font-size: 6px; font-weight: 650; line-height: 1; text-overflow: ellipsis; white-space: nowrap; }
+    .quick-account-reset.elapsed { color: var(--subtle); }
     .quick-card-empty { grid-column: 1 / -1; padding: 12px 4px 10px; color: var(--subtle); font-size: 11px; }
 
     #list { display: grid; gap: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
@@ -344,10 +356,9 @@
     }
     @media (max-width: 680px) {
       .wrap { width: min(100% - 24px, 1480px); padding-top: 22px; }
-      .top { flex-direction: column; margin-bottom: 20px; }
-      .connection { width: 100%; }
-      .tabs { margin-bottom: 12px; overflow-x: auto; }
-      .tab { flex: 0 0 auto; min-width: 120px; }
+      .top { margin-bottom: 14px; }
+      .tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; margin-bottom: 12px; padding: 4px; overflow: hidden; }
+      .tab { min-width: 0; padding: 9px 4px; font-size: 12px; }
       .summary { gap: 9px; }
       .pool-summary { gap: 14px; padding: 14px; }
       .pool-summary-head { gap: 10px; }
@@ -364,7 +375,7 @@
       .metric-icon { width: 32px; height: 32px; flex-basis: 32px; }
       .metric-icon svg { width: 16px; height: 16px; }
       .metric-value { font-size: 19px; }
-      .metric-action, .connection-action { padding: 6px 7px; font-size: 10px; }
+      .metric-action { padding: 6px 7px; font-size: 10px; }
       .proxy-summary { padding: 14px; }
       .proxy-summary-list { grid-template-columns: 1fr; }
       .assign { padding: 0 14px 14px; }
@@ -406,21 +417,12 @@
           </svg>
         </div>
         <div>
-          <div class="eyebrow">Sub2API · Admin</div>
-          <h1 class="title">OAuth 账号管理</h1>
-          <div class="sub">代理、OpenAI OAuth 账号与调度状态</div>
-        </div>
-      </div>
-      <div class="connection" id="connection">
-        <span class="connection-dot pending" id="connectionDot"></span>
-        <div>
-          <strong id="connectionText">检查登录状态</strong>
-          <small>复用 Sub2API 同源登录态</small>
+          <h1 class="title">号池管理</h1>
         </div>
       </div>
     </header>
 
-    <nav class="tabs" id="tabs" role="tablist" aria-label="OAuth 管理功能">
+    <nav class="tabs" id="tabs" role="tablist" aria-label="号池管理功能">
       <button class="tab" id="tab-quick" type="button" role="tab" data-tab="quick" aria-controls="panel-quick" aria-selected="true" tabindex="0">快速调度</button>
       <button class="tab" id="tab-pool" type="button" role="tab" data-tab="pool" aria-controls="panel-pool" aria-selected="false" tabindex="-1">号池状态</button>
       <button class="tab" id="tab-batch" type="button" role="tab" data-tab="batch" aria-controls="panel-batch" aria-selected="false" tabindex="-1">批量操作</button>
@@ -478,6 +480,9 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M7 9h.01M11 9h6M7 13h10"></path></svg>
           </div>
           <div><span class="metric-label">代理</span><strong class="metric-value" id="proxyCount">—</strong><span class="metric-note">按接口返回顺序展示</span></div>
+        </div>
+        <div class="proxy-summary-comparison" id="proxyP95Comparison" aria-live="polite">
+          <div class="proxy-summary-chart-empty">正在加载代理 P95 数据…</div>
         </div>
         <div class="proxy-summary-list" id="proxySummaryList" aria-live="polite">
           <span class="proxy-summary-empty">正在加载代理…</span>
@@ -555,10 +560,14 @@
             <span class="form-label">代理</span>
             <select id="quickAddProxy" aria-label="选择快速添加代理"></select>
           </label>
-          <label class="form-field">
+          <div class="form-field">
             <span class="form-label">模型限制</span>
-            <input id="quickAddModel" type="text" value="gpt-5.6-luna" autocomplete="off" spellcheck="false">
-          </label>
+            <div class="quick-add-groups" id="quickAddModels" role="group" aria-label="选择模型限制">
+              <label class="quick-add-group-option"><input type="checkbox" data-quick-add-model value="gpt-6-luna" checked><span>gpt-6-luna</span></label>
+              <label class="quick-add-group-option"><input type="checkbox" data-quick-add-model value="codex-auto-review" checked><span>codex-auto-review</span></label>
+            </div>
+            <span class="form-hint">可多选</span>
+          </div>
         </div>
         <div class="quick-add-compact-grid">
           <label class="form-field">
@@ -621,7 +630,18 @@
         groups: [],
         accounts: [],
         latency: {},
-        firstToken: { metrics: {}, loading: false, error: '' },
+        firstToken: { metrics: {}, requests: [], progress: { page: 0, totalPages: null, recordCount: 0, totalRecords: null }, loading: false, loaded: false, loadedRangeDays: 0, error: '' },
+        firstTokenRangeDays: 1,
+        proxiesLoaded: false,
+        accountsLoaded: false,
+        groupsLoaded: false,
+        proxiesPromise: null,
+        accountsPromise: null,
+        groupsPromise: null,
+        sharedPromise: null,
+        accountRefreshPromise: null,
+        poolMetricsPromise: null,
+        coreError: '',
         selected: new Set(),
         quickGroupIDs: new Set(),
         quickGroupsInitialized: false,
@@ -748,15 +768,24 @@
         return [];
       };
 
-      async function allPages(path, params = {}) {
+      async function allPages(path, params = {}, onProgress = null) {
         let page = 1;
         const result = [];
+        let totalPages = null;
+        let totalRecords = null;
         while (page <= 100) {
           const query = new URLSearchParams({ ...params, page: String(page), page_size: '100' });
           const data = await api(path + '?' + query);
           const items = arrayFrom(data);
           result.push(...items);
-          const totalPages = Number(data?.total_pages || data?.pages || 0);
+          const reportedPages = Number(data?.total_pages ?? data?.pages);
+          const reportedRecords = Number(data?.total ?? data?.total_count ?? data?.total_items ?? data?.records_total);
+          if (Number.isInteger(reportedPages) && reportedPages > 0) totalPages = reportedPages;
+          if (Number.isInteger(reportedRecords) && reportedRecords >= 0) {
+            totalRecords = reportedRecords;
+            if (totalPages == null) totalPages = Math.max(1, Math.ceil(totalRecords / 100));
+          }
+          if (onProgress) onProgress({ page, totalPages, totalRecords, recordCount: result.length });
           if ((totalPages && page >= totalPages) || items.length < 100) break;
           page += 1;
         }
@@ -846,7 +875,19 @@
 
       function accountUsagePercent(account) {
         const value = Number(account.extra?.codex_7d_used_percent);
-        return Number.isFinite(value) ? value : null;
+        if (!Number.isFinite(value)) return null;
+        return accountUsageResetHasPassed(account) ? 0 : value;
+      }
+
+      function knownTimestamp(value) {
+        if (!value) return null;
+        const timestamp = new Date(value).getTime();
+        return Number.isFinite(timestamp) ? timestamp : null;
+      }
+
+      function accountUsageResetHasPassed(account) {
+        const resetAt = knownTimestamp(account.extra?.codex_7d_reset_at);
+        return resetAt != null && resetAt <= Date.now();
       }
 
       function accountUsageIsLimited(account) {
@@ -879,6 +920,13 @@
         } else if (rawKey !== 'error' && isFuture(account.temp_unschedulable_until)) {
           key = 'temp_unschedulable';
           detail = '预计 ' + formatDate(account.temp_unschedulable_until) + ' 恢复';
+        }
+
+        if (rawKey === 'rate_limited' && accountUsageResetHasPassed(account) &&
+            !rateLimitActive && !modelRateLimitActive &&
+            !isFuture(account.overload_until) && !isFuture(account.temp_unschedulable_until)) {
+          key = 'active';
+          detail = '';
         }
 
         if (!statusLabels[key]) {
@@ -968,13 +1016,13 @@
         return { key: 'error', label: '错误' };
       }
 
-      // 快速调度方块三档分级：调度中（可用）/ 已暂停（可启用）/ 限流或额度 ≥ 90% 或错误（不建议启用）
+      // 快速调度方块三档分级：调度中（可用）/ 已暂停（可启用）/ 限流或尚未重置的 7d 额度 ≥ 90%（不建议启用）
       function quickAccountTier(account, accountState) {
         const quickStatus = quickAccountStatus(accountState || accountStatus(account));
         const percent = accountUsagePercent(account);
         if (quickStatus.key === 'error') return { key: 'error', label: '不建议启用', reason: '账号异常' };
         if (quickStatus.key === 'limited') return { key: 'warn', label: '不建议启用', reason: '限流中' };
-        if (percent != null && percent >= 90) return { key: 'warn', label: '不建议启用', reason: '7d 额度已用 ' + formatUsagePercent(percent) };
+        if (accountUsageIsLimited(account)) return { key: 'warn', label: '不建议启用', reason: '7d 额度已用 ' + formatUsagePercent(percent) };
         if (account.schedulable) return { key: 'active', label: '可用', reason: '调度中' };
         return { key: 'paused', label: '可启用', reason: '已暂停' };
       }
@@ -1008,8 +1056,7 @@
         return { main, detail };
       }
 
-      const firstTokenBucketDuration = 15 * 60 * 1000;
-      const firstTokenBucketCount = 96;
+      const firstTokenBucketDuration = 60 * 60 * 1000;
       const firstTokenChartSeries = [
         { key: 'average', label: '平均值', color: '#5865d9' },
         { key: 'p95', label: 'P95', color: '#c77b15' },
@@ -1061,7 +1108,8 @@
         };
       }
 
-      function aggregateFirstTokenMetrics(requests) {
+      function aggregateFirstTokenMetrics(requests, rangeDays = state.firstTokenRangeDays) {
+        const bucketCount = rangeDays * 24;
         const oauthAccountIDs = new Set(state.accounts
           .map((account) => account.id)
           .filter((id) => id != null)
@@ -1075,8 +1123,8 @@
           .map((id) => String(id)));
         const rangeEnd = Date.now();
         const currentBucketStart = Math.floor(rangeEnd / firstTokenBucketDuration) * firstTokenBucketDuration;
-        const rangeStart = currentBucketStart - firstTokenBucketDuration * (firstTokenBucketCount - 1);
-        const samples = new Map([...knownProxyIDs].map((id) => [id, Array.from({ length: firstTokenBucketCount }, () => [])]));
+        const rangeStart = currentBucketStart - firstTokenBucketDuration * (bucketCount - 1);
+        const samples = new Map([...knownProxyIDs].map((id) => [id, Array.from({ length: bucketCount }, () => [])]));
 
         requests.forEach((request) => {
           const firstToken = requestFirstTokenMs(request);
@@ -1092,7 +1140,7 @@
           if (!proxySamples) return;
 
           const bucketIndex = Math.min(
-            firstTokenBucketCount - 1,
+            bucketCount - 1,
             Math.floor((createdAt - rangeStart) / firstTokenBucketDuration)
           );
           if (bucketIndex >= 0) proxySamples[bucketIndex].push(firstToken);
@@ -1121,6 +1169,12 @@
         return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', hour12: false });
       }
 
+      function formatFirstTokenDate(value) {
+        const date = new Date(value);
+        if (!Number.isFinite(date.getTime())) return '';
+        return date.toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric' });
+      }
+
       function svgNumber(value) {
         return Number(value.toFixed(2));
       }
@@ -1132,10 +1186,8 @@
         return Number.isFinite(value) && value >= 0 ? value : null;
       }
 
-      // 高斯低通平滑核：radius 越大越平滑（也越抹平真实波峰）。
-      // radius=6 → 13 点窗口，15 分钟桶下有效跨度约 ±90 分钟，足以压掉逐桶抖动。
-      // 想更顺就调大 radius，想更保真就调小。
-      const firstTokenSmoothingRadius = 6;
+      // 小幅平滑小时级采样，避免图表抖动，同时保留高延迟波峰。
+      const firstTokenSmoothingRadius = 1;
 
       const firstTokenSmoothingWeights = (() => {
         const sigma = Math.max(firstTokenSmoothingRadius / 2, .5);
@@ -1198,14 +1250,14 @@
         return commands.join(' ');
       }
 
-      // 全局统一的 Y 轴上限：取所有代理平滑后曲线的最大值，让每张图共用同一刻度，便于横向对比差异。
-      function firstTokenSharedYMax() {
+      // 全局统一的 Y 轴上限：让各代理曲线共用同一刻度，便于横向对比差异。
+      function firstTokenSharedYMax(seriesKeys = firstTokenChartSeries.map((series) => series.key)) {
         let max = 0;
         const metrics = state.firstToken.metrics || {};
         Object.keys(metrics).forEach((proxyID) => {
           const buckets = Array.isArray(metrics[proxyID]) ? metrics[proxyID] : [];
-          firstTokenChartSeries.forEach((series) => {
-            firstTokenSmoothedValues(buckets, series.key).forEach((value) => {
+          seriesKeys.forEach((key) => {
+            firstTokenSmoothedValues(buckets, key).slice(-state.firstTokenRangeDays * 24).forEach((value) => {
               if (value != null && value > max) max = value;
             });
           });
@@ -1213,15 +1265,59 @@
         return max > 0 ? max * 1.1 : 1000;
       }
 
+      function firstTokenRangeLabel() {
+        return state.firstTokenRangeDays === 1 ? '1 天' : state.firstTokenRangeDays + ' 天';
+      }
+
+      function firstTokenRangeButtonsMarkup() {
+        return '<div class="proxy-summary-range-controls" role="group" aria-label="延迟图时间范围">' +
+          [1, 3, 7].map((days) => '<button class="proxy-summary-range-button" type="button" data-first-token-range="' + days + '" aria-pressed="' + (state.firstTokenRangeDays === days) + '"' + (state.firstToken.loading ? ' disabled' : '') + '>' + (days === 7 ? '1 周' : days + ' 天') + '</button>').join('') +
+        '</div>';
+      }
+
+      function firstTokenTickLabel(value) {
+        const date = new Date(value);
+        if (!Number.isFinite(date.getTime())) return '';
+        if (state.firstTokenRangeDays === 1) return formatFirstTokenHour(value);
+        if (state.firstTokenRangeDays === 3) {
+          return date.toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
+        }
+        return formatFirstTokenDate(value);
+      }
+
+      function firstTokenTickIndexes(count) {
+        return [...new Set(Array.from({ length: 7 }, (_, index) =>
+          Math.round(index * (count - 1) / 6)
+        ))].filter((index) => index >= 0 && index < count);
+      }
+
+      function firstTokenLineMarkup(values, color, xPosition, yPosition, plot, pathClass, buckets) {
+        const points = values.map((value, index) => {
+          if (value == null) return null;
+          return { index, value, x: xPosition(index), y: yPosition(value) };
+        }).filter(Boolean);
+        if (!points.length) return '';
+        if (points.length === 1) {
+          const point = points[0];
+          const start = buckets[point.index]?.start;
+          const title = start == null ? '' : formatFirstTokenDate(start) + ' ' + formatFirstTokenHour(start) + ' · ' + formatFirstTokenMs(point.value);
+          return '<circle class="proxy-summary-comparison-point" cx="' + svgNumber(point.x) + '" cy="' + svgNumber(point.y) + '" r="2.5" fill="' + color + '"><title>' + escapeHTML(title) + '</title></circle>';
+        }
+        const path = firstTokenSmoothPath(points, plot);
+        return path ? '<path class="' + pathClass + '" d="' + path + '" stroke="' + color + '"></path>' : '';
+      }
+
       function firstTokenChartMarkup(proxyID) {
-        const buckets = Array.isArray(state.firstToken.metrics[String(proxyID)]) ? state.firstToken.metrics[String(proxyID)] : [];
+        const allBuckets = Array.isArray(state.firstToken.metrics[String(proxyID)]) ? state.firstToken.metrics[String(proxyID)] : [];
+        const startIndex = Math.max(0, allBuckets.length - state.firstTokenRangeDays * 24);
+        const buckets = allBuckets.slice(startIndex);
         const displaySeries = firstTokenChartSeries.map((series) => ({
           ...series,
-          values: firstTokenSmoothedValues(buckets, series.key)
+          values: firstTokenSmoothedValues(allBuckets, series.key).slice(startIndex)
         }));
         const values = displaySeries.flatMap((series) => series.values
           .filter((value) => value != null));
-        if (!values.length) return '<div class="proxy-summary-chart-empty">暂无 OAuth 首字样本</div>';
+        if (!values.length) return '<div class="proxy-summary-chart-empty">最近 ' + escapeHTML(firstTokenRangeLabel()) + ' 暂无 OAuth 首字样本</div>';
 
         const chartWidth = 360;
         const chartHeight = 200;
@@ -1238,27 +1334,18 @@
           return '<line class="proxy-summary-chart-grid" x1="' + plot.left + '" y1="' + svgNumber(y) + '" x2="' + plot.right + '" y2="' + svgNumber(y) + '"></line>' +
             '<text class="proxy-summary-chart-label" x="' + (plot.left - 6) + '" y="' + svgNumber(y + 3) + '" text-anchor="end">' + escapeHTML(formatFirstTokenMs(value)) + '</text>';
         }).join('');
-        const xTickIndexes = [...new Set(Array.from({ length: 7 }, (_, index) =>
-          Math.round(index * (buckets.length - 1) / 6)
-        ))].filter((index) => index >= 0 && index < buckets.length);
-        const xTicks = xTickIndexes.map((index) => {
+        const xTicks = firstTokenTickIndexes(buckets.length).map((index) => {
           const x = xPosition(index);
-          return '<text class="proxy-summary-chart-label" x="' + svgNumber(x) + '" y="181" text-anchor="middle">' + escapeHTML(formatFirstTokenHour(buckets[index].start)) + '</text>';
+          return '<text class="proxy-summary-chart-label" x="' + svgNumber(x) + '" y="181" text-anchor="middle">' + escapeHTML(firstTokenTickLabel(buckets[index].start)) + '</text>';
         }).join('');
-        const seriesMarkup = displaySeries.map((series) => {
-          const points = series.values.map((value, index) => {
-            if (value == null) return null;
-            return { index, value, x: xPosition(index), y: yPosition(value) };
-          }).filter(Boolean);
-          const path = firstTokenSmoothPath(points, plot);
-          const pathMarkup = path ? '<path class="proxy-summary-chart-path" d="' + path + '" stroke="' + series.color + '"></path>' : '';
-          return pathMarkup;
-        }).join('');
+        const seriesMarkup = displaySeries.map((series) => firstTokenLineMarkup(
+          series.values, series.color, xPosition, yPosition, plot, 'proxy-summary-chart-path', buckets
+        )).join('');
         const legend = firstTokenChartSeries.map((series) => '<span class="proxy-summary-chart-legend-item"><i class="proxy-summary-chart-swatch ' + series.key + '"></i>' + escapeHTML(series.label) + '</span>').join('');
 
         return '<div class="proxy-summary-chart-wrap">' +
           '<div class="proxy-summary-chart-legend" aria-label="图例">' + legend + '</div>' +
-          '<svg class="proxy-summary-chart" viewBox="0 0 ' + chartWidth + ' ' + chartHeight + '" role="img" aria-label="最近 24 小时首字耗时趋势图，每 15 分钟聚合，包含平均值、P95 和 P99">' +
+          '<svg class="proxy-summary-chart" viewBox="0 0 ' + chartWidth + ' ' + chartHeight + '" role="img" aria-label="最近 ' + escapeHTML(firstTokenRangeLabel()) + '首字耗时趋势图，按小时聚合，包含平均值、P95 和 P99">' +
             yTicks +
             '<line class="proxy-summary-chart-axis" x1="' + plot.left + '" y1="' + plot.top + '" x2="' + plot.left + '" y2="' + plot.bottom + '"></line>' +
             '<line class="proxy-summary-chart-axis" x1="' + plot.left + '" y1="' + plot.bottom + '" x2="' + plot.right + '" y2="' + plot.bottom + '"></line>' +
@@ -1270,25 +1357,174 @@
         '</div>';
       }
 
+      const proxyP95Colors = [
+        '#5865d9', '#d34f5f', '#15966c', '#c77b15', '#7c3aed',
+        '#0891b2', '#e11d48', '#65a30d', '#475569', '#9333ea',
+        '#0f766e', '#dc2626', '#2563eb', '#a16207', '#be185d',
+        '#4d7c0f', '#6d28d9', '#0369a1', '#b45309', '#334155'
+      ];
+
+      function proxyP95Color(proxy, index) {
+        const id = proxyId(proxy);
+        const numericID = Number(id);
+        const colorIndex = id != null && Number.isSafeInteger(numericID)
+          ? Math.abs(numericID) % proxyP95Colors.length
+          : index % proxyP95Colors.length;
+        return proxyP95Colors[colorIndex];
+      }
+
+      function proxyP95ComparisonHeadMarkup() {
+        return '<div class="proxy-summary-comparison-head"><strong>代理首字耗时 P95 对比</strong><div class="proxy-summary-range-controls-wrap"><small>最近 ' + escapeHTML(firstTokenRangeLabel()) + ' · 每小时 · 单位秒</small>' + firstTokenRangeButtonsMarkup() + '</div></div>';
+      }
+
+      function proxyP95ComparisonMarkup() {
+        const series = state.proxies.map((proxy, index) => {
+          const id = proxyId(proxy);
+          const allBuckets = id == null ? [] : (state.firstToken.metrics[String(id)] || []);
+          const startIndex = Math.max(0, allBuckets.length - state.firstTokenRangeDays * 24);
+          const buckets = allBuckets.slice(startIndex);
+          const values = firstTokenSmoothedValues(allBuckets, 'p95').slice(startIndex);
+          return { proxy, buckets, values, color: proxyP95Color(proxy, index) };
+        });
+        const timeline = series.find((item) => item.buckets.length)?.buckets || [];
+        if (!timeline.length) return proxyP95ComparisonHeadMarkup() + '<div class="proxy-summary-chart-empty">暂无可用于对比的代理数据</div>';
+        if (!series.some((item) => item.values.some((value) => value != null))) {
+          return proxyP95ComparisonHeadMarkup() + '<div class="proxy-summary-chart-empty">最近 ' + escapeHTML(firstTokenRangeLabel()) + '暂无 OAuth 首字 P95 样本</div>';
+        }
+
+        const chartWidth = 960;
+        const chartHeight = 274;
+        const plot = { left: 52, right: 944, top: 18, bottom: 222 };
+        const plotWidth = plot.right - plot.left;
+        const plotHeight = plot.bottom - plot.top;
+        const yMax = firstTokenSharedYMax(['p95']);
+        const xPosition = (index) => plot.left + (timeline.length > 1 ? index / (timeline.length - 1) : .5) * plotWidth;
+        const yPosition = (value) => plot.bottom - (value / yMax) * plotHeight;
+        const yTicks = Array.from({ length: 5 }, (_, index) => {
+          const ratio = index / 4;
+          const value = yMax * (1 - ratio);
+          const y = plot.top + plotHeight * ratio;
+          return '<line class="proxy-summary-chart-grid" x1="' + plot.left + '" y1="' + svgNumber(y) + '" x2="' + plot.right + '" y2="' + svgNumber(y) + '"></line>' +
+            '<text class="proxy-summary-chart-label" x="' + (plot.left - 7) + '" y="' + svgNumber(y + 3) + '" text-anchor="end">' + escapeHTML(formatFirstTokenMs(value)) + '</text>';
+        }).join('');
+        const xTicks = firstTokenTickIndexes(timeline.length).map((index) => {
+          const x = xPosition(index);
+          return '<text class="proxy-summary-chart-label" x="' + svgNumber(x) + '" y="239" text-anchor="middle">' + escapeHTML(firstTokenTickLabel(timeline[index].start)) + '</text>';
+        }).join('');
+        const seriesMarkup = series.map((item) => firstTokenLineMarkup(
+          item.values, item.color, xPosition, yPosition, plot, 'proxy-summary-comparison-chart-path', item.buckets
+        )).join('');
+        const legend = series.map((item) => {
+          const hasSamples = item.values.some((value) => value != null);
+          const name = proxyName(item.proxy) + (hasSamples ? '' : '（暂无样本）');
+          return '<span class="proxy-summary-comparison-legend-item" title="' + escapeHTML(name) + '"><i class="proxy-summary-comparison-swatch" style="background:' + item.color + '"></i><span>' + escapeHTML(name) + '</span></span>';
+        }).join('');
+
+        return proxyP95ComparisonHeadMarkup() +
+          '<div class="proxy-summary-comparison-legend" aria-label="代理图例">' + legend + '</div>' +
+          '<div class="proxy-summary-comparison-chart-scroll">' +
+            '<svg class="proxy-summary-comparison-chart" viewBox="0 0 ' + chartWidth + ' ' + chartHeight + '" role="img" aria-label="最近 ' + escapeHTML(firstTokenRangeLabel()) + '所有代理的首字耗时 P95 趋势图，按小时聚合">' +
+              yTicks +
+              '<line class="proxy-summary-chart-axis" x1="' + plot.left + '" y1="' + plot.top + '" x2="' + plot.left + '" y2="' + plot.bottom + '"></line>' +
+              '<line class="proxy-summary-chart-axis" x1="' + plot.left + '" y1="' + plot.bottom + '" x2="' + plot.right + '" y2="' + plot.bottom + '"></line>' +
+              xTicks + seriesMarkup +
+              '<text class="proxy-summary-chart-axis-title" transform="rotate(-90 12 130)" x="12" y="130" text-anchor="middle">首字耗时 P95</text>' +
+              '<text class="proxy-summary-chart-axis-title" x="498" y="270" text-anchor="middle">时间</text>' +
+            '</svg>' +
+          '</div>';
+      }
+
       function firstTokenSummaryMarkup(proxyID) {
-        const stateNote = state.firstToken.loading ? '加载中…' : (state.firstToken.error ? '加载失败' : '仅 OAuth · 15 分钟平滑趋势');
+        const stateNote = state.firstToken.loading ? '加载中…' : (state.firstToken.error ? '加载失败' : '仅 OAuth · 最近 ' + firstTokenRangeLabel() + '按小时聚合');
         const errorTitle = state.firstToken.error ? '首字统计不可用：' + state.firstToken.error : '';
         const chartMarkup = state.firstToken.loading
           ? '<div class="proxy-summary-chart-empty">正在加载首字数据…</div>'
           : state.firstToken.error
             ? '<div class="proxy-summary-chart-empty">首字统计不可用：' + escapeHTML(state.firstToken.error) + '</div>'
-            : firstTokenChartMarkup(proxyID);
+          : firstTokenChartMarkup(proxyID);
         return '<div class="proxy-summary-token"' + (errorTitle ? ' title="' + escapeHTML(errorTitle) + '"' : '') + '>' +
-          '<div class="proxy-summary-token-head"><strong>近期请求首字</strong><small>' + escapeHTML(stateNote) + '</small></div>' +
+          '<div class="proxy-summary-token-head"><strong>最近 ' + escapeHTML(firstTokenRangeLabel()) + '首字耗时</strong><small>' + escapeHTML(stateNote) + '</small></div>' +
           chartMarkup + '</div>';
       }
 
-      async function loadFirstTokenMetrics() {
-        state.firstToken = { metrics: {}, loading: true, error: '' };
+      function firstTokenProgressText(progress = state.firstToken.progress) {
+        if (!progress || progress.page < 1) return '准备读取请求记录…';
+        const pageText = progress.totalPages
+          ? '已读取 ' + Math.min(progress.page, progress.totalPages) + ' / ' + progress.totalPages + ' 页'
+          : '已读取第 ' + progress.page + ' 页';
+        const recordCount = Number(progress.recordCount || 0).toLocaleString('zh-CN');
+        const recordText = progress.totalRecords == null
+          ? recordCount + ' 条请求'
+          : recordCount + ' / ' + Number(progress.totalRecords).toLocaleString('zh-CN') + ' 条请求';
+        return pageText + ' · ' + recordText;
+      }
+
+      function firstTokenProgressMarkup() {
+        return '<div class="first-token-progress">' +
+          '<div class="first-token-progress-track indeterminate" data-first-token-progress-track role="progressbar" aria-label="' + escapeHTML(firstTokenRangeLabel()) + '首字耗时数据加载进度" aria-valuemin="0"><span class="first-token-progress-fill"></span></div>' +
+          '<small data-first-token-progress-text>' + escapeHTML(firstTokenProgressText()) + '</small>' +
+        '</div>';
+      }
+
+      function updateFirstTokenProgressUI() {
+        const comparison = $('#proxyP95Comparison');
+        if (!comparison) return;
+        const track = comparison.querySelector('[data-first-token-progress-track]');
+        const text = comparison.querySelector('[data-first-token-progress-text]');
+        if (!track || !text) return;
+
+        const progress = state.firstToken.progress || {};
+        const fill = track.firstElementChild;
+        const totalPages = Number(progress.totalPages);
+        const hasTotalPages = Number.isInteger(totalPages) && totalPages > 0;
+        if (hasTotalPages) {
+          const currentPage = Math.min(Math.max(0, Number(progress.page) || 0), totalPages);
+          track.classList.remove('indeterminate');
+          track.setAttribute('aria-valuemax', String(totalPages));
+          track.setAttribute('aria-valuenow', String(currentPage));
+          fill.style.width = (currentPage / totalPages * 100) + '%';
+        } else {
+          track.classList.add('indeterminate');
+          track.removeAttribute('aria-valuemax');
+          track.removeAttribute('aria-valuenow');
+          fill.style.width = '';
+        }
+        text.textContent = firstTokenProgressText(progress);
+      }
+
+      function firstTokenRequestParams(rangeDays) {
+        const params = { platform: 'openai', kind: 'all', sort: 'created_at_desc' };
+        if (rangeDays === 1) return { ...params, time_range: '24h' };
+        if (rangeDays === 7) return { ...params, time_range: '7d' };
+
+        const endTime = Date.now();
+        return {
+          ...params,
+          start_time: new Date(endTime - rangeDays * 24 * 60 * 60 * 1000).toISOString(),
+          end_time: new Date(endTime).toISOString()
+        };
+      }
+
+      async function loadFirstTokenMetrics(rangeDays = state.firstTokenRangeDays) {
+        if (state.firstToken.loading) return;
+        if (state.firstToken.loadedRangeDays >= rangeDays) {
+          state.firstToken.error = '';
+          renderProxySummary();
+          return;
+        }
+        state.firstToken.progress = { page: 0, totalPages: null, recordCount: 0, totalRecords: null };
+        state.firstToken.loading = true;
+        state.firstToken.error = '';
         renderProxySummary();
         try {
-          const requests = await allPages('/admin/ops/requests', { time_range: '24h', platform: 'openai', kind: 'all', sort: 'created_at_desc' });
-          state.firstToken.metrics = aggregateFirstTokenMetrics(requests);
+          const requests = await allPages('/admin/ops/requests', firstTokenRequestParams(rangeDays), (progress) => {
+            state.firstToken.progress = progress;
+            updateFirstTokenProgressUI();
+          });
+          state.firstToken.requests = requests;
+          state.firstToken.metrics = aggregateFirstTokenMetrics(requests, rangeDays);
+          state.firstToken.loadedRangeDays = rangeDays;
+          state.firstToken.loaded = true;
         } catch (error) {
           state.firstToken.error = error.message || '请求记录加载失败';
         } finally {
@@ -1329,15 +1565,22 @@
       }
 
       async function testAllProxies() {
-        const proxies = state.proxies.filter((proxy) => proxyId(proxy) != null);
+        const proxies = state.proxies.filter((proxy) => {
+          const id = proxyId(proxy);
+          const latency = state.latency[String(id)];
+          return id != null && (!latency || latency.testing || latency.error || latency.average == null);
+        });
         if (!proxies.length) return;
-        let finished = 0;
-        setStatus('正在测试代理延迟（0/' + proxies.length + '）', false, true);
         await Promise.all(proxies.map(async (proxy) => {
           await testProxy(proxyId(proxy));
-          finished += 1;
-          setStatus('正在测试代理延迟（' + finished + '/' + proxies.length + '）', false, true);
         }));
+      }
+
+      function loadPoolMetrics() {
+        if (state.poolMetricsPromise) return state.poolMetricsPromise;
+        state.poolMetricsPromise = Promise.all([testAllProxies(), loadFirstTokenMetrics()])
+          .finally(() => { state.poolMetricsPromise = null; });
+        return state.poolMetricsPromise;
       }
 
       function proxyStatus(proxy) {
@@ -1351,15 +1594,15 @@
 
       function usage(account) {
         const extra = account.extra || {};
-        const percent = Number(extra.codex_7d_used_percent);
-        if (!Number.isFinite(percent)) {
+        const percent = accountUsagePercent(account);
+        if (percent == null) {
           return '<div class="usage usage-empty" title="暂无已保存用量数据"><span class="usage-ring" aria-hidden="true"><strong>—</strong></span><span class="usage-copy"><strong>7d 用量</strong><small>暂无快照</small></span></div>';
         }
 
         const value = clampUsagePercent(percent);
         const resetAt = extra.codex_7d_reset_at ? formatDate(extra.codex_7d_reset_at) : '';
         const updatedAt = extra.codex_usage_updated_at ? formatDate(extra.codex_usage_updated_at) : '';
-        const note = resetAt ? '重置 ' + resetAt : (updatedAt ? '更新 ' + updatedAt : '已保存快照');
+        const note = accountUsageResetHasPassed(account) ? '已重置' : (resetAt ? '重置 ' + resetAt : (updatedAt ? '更新 ' + updatedAt : '已保存快照'));
         const color = usageColor(value);
         return '<div class="usage" title="' + escapeHTML((updatedAt ? '更新：' + updatedAt + '；' : '') + (resetAt ? '重置：' + resetAt : '')) + '">' +
           '<span class="usage-ring" style="--usage-percent:' + value + '%;--usage-color:' + color + '" aria-label="7d 已使用 ' + escapeHTML(formatUsagePercent(value)) + '"><strong>' + formatUsagePercent(value) + '</strong></span>' +
@@ -1381,6 +1624,36 @@
         return [...accounts].sort((left, right) => {
           const scheduleOrder = Number(Boolean(right.schedulable)) - Number(Boolean(left.schedulable));
           if (scheduleOrder) return scheduleOrder;
+
+          const leftUsage = accountUsagePercent(left);
+          const rightUsage = accountUsagePercent(right);
+          if (leftUsage == null && rightUsage != null) return 1;
+          if (leftUsage != null && rightUsage == null) return -1;
+          if (leftUsage != null && rightUsage != null && leftUsage !== rightUsage) return leftUsage - rightUsage;
+
+          return accountName(left).localeCompare(accountName(right), 'zh-CN') || Number(left.id) - Number(right.id);
+        });
+      }
+
+      function quickSortedAccounts(accounts) {
+        const now = Date.now();
+        return [...accounts].sort((left, right) => {
+          const scheduleOrder = Number(Boolean(right.schedulable)) - Number(Boolean(left.schedulable));
+          if (scheduleOrder) return scheduleOrder;
+
+          const leftLimited = quickAccountStatus(accountStatus(left)).key === 'limited';
+          const rightLimited = quickAccountStatus(accountStatus(right)).key === 'limited';
+          const limitedOrder = Number(leftLimited) - Number(rightLimited);
+          if (limitedOrder) return limitedOrder;
+
+          const leftReset = knownTimestamp(left.extra?.codex_7d_reset_at);
+          const rightReset = knownTimestamp(right.extra?.codex_7d_reset_at);
+          const resetBucket = (timestamp) => timestamp == null ? 1 : (timestamp <= now ? 2 : 0);
+          const bucketOrder = resetBucket(leftReset) - resetBucket(rightReset);
+          if (bucketOrder) return bucketOrder;
+          if (leftReset != null && rightReset != null && leftReset > now && rightReset > now && leftReset !== rightReset) {
+            return leftReset - rightReset;
+          }
 
           const leftUsage = accountUsagePercent(left);
           const rightUsage = accountUsagePercent(right);
@@ -1414,6 +1687,8 @@
           const tab = document.querySelector('[data-tab="' + activeTab + '"]');
           if (tab) tab.focus();
         }
+
+        loadTabData(activeTab);
       }
 
       function updateQuickGroupSummary() {
@@ -1476,12 +1751,32 @@
         return '<span class="quick-account-usage" style="--usage-percent:' + value + '%;--usage-color:' + usageColor(value) + '" aria-label="7d 已使用 ' + escapeHTML(formatUsagePercent(value)) + '"><strong>' + formatUsagePercent(value) + '</strong></span>';
       }
 
+      function quickAccountReset(account) {
+        const rawResetAt = account.extra?.codex_7d_reset_at;
+        const resetTimestamp = knownTimestamp(rawResetAt);
+        if (resetTimestamp == null) return null;
+        if (resetTimestamp <= Date.now()) {
+          return { label: '未使用', title: '7d 重置时间已过，当前周期标记为未使用', elapsed: true };
+        }
+
+        const resetLabel = formatDate(rawResetAt);
+        if (!resetLabel) return null;
+        return { label: '重置 ' + resetLabel, title: '7d 预期重置时间：' + resetLabel, elapsed: false };
+      }
+
+      function quickAccountResetMarkup(reset) {
+        if (!reset) return '';
+        return '<span class="quick-account-reset' + (reset.elapsed ? ' elapsed' : '') + '" title="' + escapeHTML(reset.title) + '" aria-label="' + escapeHTML(reset.title) + '">' + escapeHTML(reset.label) + '</span>';
+      }
+
       function quickAccountTitle(account) {
         const accountState = accountStatus(account);
         const quickStatus = quickAccountStatus(accountState);
         const tier = quickAccountTier(account, accountState);
         const detail = accountState.detail ? '；' + accountState.detail : '';
-        return tier.label + '（' + tier.reason + '） · ' + (account.schedulable ? '调度中' : '已暂停') + ' · ' + accountName(account) + '（#' + account.id + '） · 状态 ' + quickStatus.label + ' · 7d 用量 ' + quickUsageLabel(account) + detail;
+        const reset = quickAccountReset(account);
+        const resetDetail = reset ? ' · ' + reset.title : '';
+        return tier.label + '（' + tier.reason + '） · ' + (account.schedulable ? '调度中' : '已暂停') + ' · ' + accountName(account) + '（#' + account.id + '） · 状态 ' + quickStatus.label + ' · 7d 用量 ' + quickUsageLabel(account) + detail + resetDetail;
       }
 
       function accountTileTitle(account) {
@@ -1512,14 +1807,15 @@
         const emptyText = state.quickGroupIDs.size ? '当前分组暂无匹配账号' : '请选择至少一个分组';
         container.innerHTML = proxies.map((proxy) => {
           const id = proxyId(proxy);
-          const accounts = sortedAccounts(accountsByProxy.get(String(id)) || []);
+          const accounts = quickSortedAccounts(accountsByProxy.get(String(id)) || []);
           const squares = accounts.length ? accounts.map((account) => {
             const accountID = String(account.id);
             const updating = state.scheduleUpdating.has(accountID);
             const accountState = accountStatus(account);
             const quickStatus = quickAccountStatus(accountState);
             const tier = quickAccountTier(account, accountState);
-            return '<button class="quick-account ' + (account.schedulable ? 'on ' : 'off ') + 'status-' + escapeHTML(quickStatus.key) + ' tier-' + escapeHTML(tier.key) + '" type="button" data-quick-schedule="' + escapeHTML(accountID) + '" data-tier="' + escapeHTML(tier.key) + '" title="' + escapeHTML(quickAccountTitle(account)) + '" aria-label="' + escapeHTML(quickAccountTitle(account)) + '"' + (updating ? ' disabled aria-busy="true"' : '') + '><span class="quick-account-status ' + escapeHTML(quickStatus.key) + '" title="' + escapeHTML(accountState.detail || quickStatus.label) + '"><i aria-hidden="true"></i><span>' + escapeHTML(quickStatus.label) + '</span></span>' + quickUsageMarkup(account) + '</button>';
+            const reset = quickAccountReset(account);
+            return '<button class="quick-account ' + (account.schedulable ? 'on ' : 'off ') + (reset ? 'has-reset ' : '') + 'status-' + escapeHTML(quickStatus.key) + ' tier-' + escapeHTML(tier.key) + '" type="button" data-quick-schedule="' + escapeHTML(accountID) + '" data-tier="' + escapeHTML(tier.key) + '" title="' + escapeHTML(quickAccountTitle(account)) + '" aria-label="' + escapeHTML(quickAccountTitle(account)) + '"' + (updating ? ' disabled aria-busy="true"' : '') + '><span class="quick-account-status ' + escapeHTML(quickStatus.key) + '" title="' + escapeHTML(accountState.detail || quickStatus.label) + '"><i aria-hidden="true"></i><span>' + escapeHTML(quickStatus.label) + '</span></span>' + quickUsageMarkup(account) + quickAccountResetMarkup(reset) + '</button>';
           }).join('') : '<div class="quick-card-empty">' + escapeHTML(emptyText) + '</div>';
 
           return '<article class="quick-card">' +
@@ -1582,7 +1878,7 @@
       function updateQuickAddButton() {
         const button = $('#quickAddButton');
         if (!button) return;
-        button.disabled = !state.loaded || state.loading || !readAuthToken();
+        button.disabled = !state.loaded || !state.groupsLoaded || state.loading || !readAuthToken();
       }
 
       function renderQuickAddProxyOptions() {
@@ -1652,7 +1948,7 @@
         const generating = state.quickAdd.generating;
         const submitting = state.quickAdd.submitting;
         const proxy = $('#quickAddProxy');
-        const model = $('#quickAddModel');
+        const models = $('#quickAddModels');
         const concurrency = $('#quickAddConcurrency');
         const priority = $('#quickAddPriority');
         const fingerprintMode = $('#quickAddFingerprintMode');
@@ -1661,7 +1957,7 @@
         const refresh = $('#quickAddRefresh');
         const submit = $('#quickAddSubmit');
         if (proxy) proxy.disabled = generating || submitting;
-        if (model) model.disabled = submitting;
+        if (models) models.querySelectorAll('input[type="checkbox"]').forEach((option) => { option.disabled = submitting; });
         if (concurrency) concurrency.disabled = submitting;
         if (priority) priority.disabled = submitting;
         if (fingerprintMode) fingerprintMode.disabled = submitting;
@@ -1757,7 +2053,7 @@
         if (state.quickAdd.submitting || state.quickAdd.generating) return;
 
         const proxyID = state.quickAdd.proxyId;
-        const model = String($('#quickAddModel')?.value || '').trim();
+        const models = Array.from(document.querySelectorAll('#quickAddModels [data-quick-add-model]:checked'), (option) => option.value);
         const concurrencyValue = String($('#quickAddConcurrency')?.value || '').trim();
         const priorityValue = String($('#quickAddPriority')?.value || '').trim();
         const fingerprintMode = String($('#quickAddFingerprintMode')?.value || 'off').trim();
@@ -1765,7 +2061,7 @@
         const priority = Number(priorityValue);
         const proxy = activeProxies().find((item) => String(proxyId(item)) === String(proxyID));
         if (!proxy) return setQuickAddStatus('请选择一个 active 代理', true);
-        if (!model) return setQuickAddStatus('模型限制不能为空', true);
+        if (!models.length) return setQuickAddStatus('请至少选择一个模型限制', true);
         if (!concurrencyValue || !Number.isInteger(concurrency) || concurrency < 1) return setQuickAddStatus('并发数必须是大于等于 1 的整数', true);
         if (!priorityValue || !Number.isInteger(priority) || priority < 0) return setQuickAddStatus('优先级必须是大于等于 0 的整数', true);
         if (!['off', 'device', 'session', 'full'].includes(fingerprintMode)) return setQuickAddStatus('Codex 指纹收敛模式无效', true);
@@ -1785,6 +2081,8 @@
         const proxyValue = valueAsID(proxyID);
         state.quickAdd.submitting = true;
         updateQuickAddModalControls();
+        let accountCreated = false;
+        let createdAccountID = null;
 
         try {
           setQuickAddStatus('正在交换 OAuth 授权…', false, true);
@@ -1803,10 +2101,10 @@
           if (!email) throw new Error('授权结果中没有找到邮箱，无法填充账号名称');
           const credentials = exchangeCredentials(exchanged);
           if (!credentials) throw new Error('授权结果中没有有效的 OAuth 凭据');
-          credentials.model_mapping = { [model]: model };
+          credentials.model_mapping = Object.fromEntries(models.map((model) => [model, model]));
 
           setQuickAddStatus('授权成功，正在创建账号…', false, true);
-          await api('/admin/accounts', {
+          const createdAccount = await api('/admin/accounts', {
             method: 'POST',
             body: JSON.stringify({
               name: email,
@@ -1821,13 +2119,40 @@
               group_ids: groupIDs
             })
           });
+          accountCreated = true;
+          const returnedAccountID = Number(createdAccount?.id);
+          createdAccountID = Number.isSafeInteger(returnedAccountID) && returnedAccountID > 0 ? returnedAccountID : null;
+          if (createdAccountID === null) throw new Error('创建接口未返回有效账号 ID，无法自动暂停');
+
+          setQuickAddStatus('账号已创建，正在暂停调度…', false, true);
+          await api('/admin/accounts/' + createdAccountID + '/schedulable', {
+            method: 'POST',
+            body: JSON.stringify({ schedulable: false })
+          });
           if (state.quickAdd.requestVersion !== version) return;
 
           state.quickAdd.submitting = false;
           closeQuickAdd();
-          await load();
-          setStatus('已快速添加账号：' + email);
+          try {
+            await refreshAccounts();
+            setStatus('已快速添加并暂停调度：' + email);
+          } catch (error) {
+            setStatus('账号已添加，但列表刷新失败：' + (error.message || '请稍后重试'), true);
+          }
         } catch (error) {
+          if (accountCreated) {
+            if (state.quickAdd.requestVersion === version) {
+              state.quickAdd.sessionId = '';
+              state.quickAdd.submitting = false;
+              closeQuickAdd();
+            }
+            try {
+              await refreshAccounts();
+            } catch {}
+            const accountLabel = createdAccountID === null ? '新账号' : '账号 #' + createdAccountID;
+            setStatus(accountLabel + '已创建，但自动暂停失败，请立即手动暂停：' + (error.message || '请稍后重试'), true);
+            return;
+          }
           if (state.quickAdd.requestVersion !== version) return;
           state.quickAdd.sessionId = '';
           setQuickAddStatus(error.message || '快速添加失败；请刷新授权链接后重试', true);
@@ -1864,7 +2189,7 @@
       }
 
       async function openQuickAdd() {
-        if (!state.loaded || state.loading) return;
+        if (!state.loaded || !state.groupsLoaded || state.loading) return;
         const proxies = activeProxies();
         const defaultProxy = leastLoadedProxy(proxies);
         if (!defaultProxy) return alert('当前没有状态为 active 的代理，暂时无法添加账号');
@@ -1880,7 +2205,7 @@
           submitting: false,
           requestVersion: state.quickAdd.requestVersion + 1
         };
-        $('#quickAddModel').value = 'gpt-5.6-luna';
+        document.querySelectorAll('#quickAddModels [data-quick-add-model]').forEach((option) => { option.checked = ['gpt-6-luna', 'codex-auto-review'].includes(option.value); });
         $('#quickAddConcurrency').value = '2';
         $('#quickAddPriority').value = '1';
         $('#quickAddFingerprintMode').value = 'off';
@@ -1937,14 +2262,6 @@
         const element = $('#status');
         element.textContent = message;
         element.className = 'status' + (isError ? ' error' : '') + (isLoading ? ' loading' : '');
-      }
-
-      function updateConnection() {
-        const dot = $('#connectionDot');
-        const text = $('#connectionText');
-        const loggedIn = Boolean(readAuthToken());
-        dot.classList.toggle('pending', !loggedIn);
-        text.textContent = loggedIn ? '登录态已就绪' : '请先登录 Sub2API';
       }
 
       function poolRecoveryChartMarkup(stats) {
@@ -2006,14 +2323,16 @@
         if (!total || !available || !limited || !unavailable || !note || !unknown || !chart) return;
 
         if (!state.loaded) {
-          const loadingText = readAuthToken() ? '正在加载账号数据…' : '登录后加载账号数据…';
+          const loadingText = state.coreError
+            ? '账号数据加载失败：' + state.coreError
+            : (readAuthToken() ? '正在加载账号数据…' : '登录后加载账号数据…');
           total.textContent = '—';
           available.textContent = '—';
           limited.textContent = '—';
           unavailable.textContent = '—';
           note.textContent = loadingText;
           unknown.textContent = '';
-          chart.innerHTML = '<div class="pool-recovery-empty">' + loadingText + '</div>';
+          chart.innerHTML = '<div class="pool-recovery-empty">' + escapeHTML(loadingText) + '</div>';
           return;
         }
 
@@ -2029,16 +2348,34 @@
       }
 
       function updateSummary() {
-        $('#proxyCount').textContent = String(state.proxies.length);
+        $('#proxyCount').textContent = state.loaded ? String(state.proxies.length) : '—';
         renderPoolSummary();
       }
 
       function renderProxySummary() {
         const container = $('#proxySummaryList');
-        if (!container) return;
+        const comparison = $('#proxyP95Comparison');
+        if (!container || !comparison) return;
+        if (!state.loaded) {
+          const message = state.coreError
+            ? '代理与账号数据加载失败：' + state.coreError
+            : (readAuthToken() ? '正在加载代理…' : '登录后加载代理…');
+          container.innerHTML = '<span class="proxy-summary-empty">' + escapeHTML(message) + '</span>';
+          comparison.innerHTML = '<div class="proxy-summary-chart-empty">' + escapeHTML(message) + '</div>';
+          return;
+        }
         if (!state.proxies.length) {
           container.innerHTML = '<span class="proxy-summary-empty">暂无代理</span>';
+          comparison.innerHTML = '<div class="proxy-summary-chart-empty">暂无代理</div>';
           return;
+        }
+        if (state.firstToken.loading || (!state.firstToken.loaded && !state.firstToken.error)) {
+          comparison.innerHTML = proxyP95ComparisonHeadMarkup() + '<div class="proxy-summary-chart-empty">' + firstTokenProgressMarkup() + '</div>';
+          updateFirstTokenProgressUI();
+        } else if (state.firstToken.error) {
+          comparison.innerHTML = proxyP95ComparisonHeadMarkup() + '<div class="proxy-summary-chart-empty">首字统计不可用：' + escapeHTML(state.firstToken.error) + '</div>';
+        } else {
+          comparison.innerHTML = proxyP95ComparisonMarkup();
         }
 
         container.innerHTML = state.proxies.map((proxy) => {
@@ -2049,7 +2386,7 @@
           const latencyText = latencyView(latency);
           const proxyDotClass = id == null ? 'inactive' : proxyState.raw;
           const proxyMeta = id == null ? '未绑定代理 ID' : 'ID ' + id + ' · 原始状态 ' + proxyState.raw;
-          const tokenMarkup = id == null ? '<div class="proxy-summary-token"><div class="proxy-summary-token-head"><strong>近期请求首字</strong><small>暂无代理 ID</small></div></div>' : firstTokenSummaryMarkup(id);
+          const tokenMarkup = id == null ? '<div class="proxy-summary-token"><div class="proxy-summary-token-head"><strong>最近 ' + escapeHTML(firstTokenRangeLabel()) + '首字耗时</strong><small>暂无代理 ID</small></div></div>' : firstTokenSummaryMarkup(id);
           return '<article class="proxy-summary-item">' +
             '<div class="proxy-summary-item-head"><div>' +
               '<div class="proxy-summary-item-name"><span class="proxy-dot ' + escapeHTML(proxyDotClass) + '"></span><strong title="' + escapeHTML(proxyName(proxy)) + '">' + escapeHTML(proxyName(proxy)) + '</strong><span class="proxy-status ' + escapeHTML(proxyState.raw) + '">' + escapeHTML(proxyState.label) + '</span></div>' +
@@ -2115,49 +2452,170 @@
         updateQuickAddButton();
       }
 
-      async function load() {
-        if (state.loading) return;
-        if (!readAuthToken()) {
-          state.loaded = false;
-          updateConnection();
+      function ensureProxies() {
+        if (state.proxiesLoaded) return Promise.resolve();
+        if (!state.proxiesPromise) {
+          state.proxiesPromise = allPages('/admin/proxies')
+            .then((proxies) => {
+              state.proxies = proxies;
+              state.proxiesLoaded = true;
+            })
+            .finally(() => { state.proxiesPromise = null; });
+        }
+        return state.proxiesPromise;
+      }
+
+      function ensureAccounts() {
+        if (state.accountsLoaded) return Promise.resolve();
+        if (!state.accountsPromise) {
+          state.accountsPromise = allPages('/admin/accounts', { platform: 'openai', type: 'oauth', lite: '1' })
+            .then((accounts) => {
+              state.accounts = accounts.filter((account) => String(account.platform || '').toLowerCase() === 'openai' && String(account.type || '').toLowerCase() === 'oauth');
+              state.accountsLoaded = true;
+              state.selected = new Set([...state.selected].filter((id) => state.accounts.some((account) => String(account.id) === id)));
+              if (state.firstToken.loaded) state.firstToken.metrics = aggregateFirstTokenMetrics(state.firstToken.requests, state.firstToken.loadedRangeDays);
+            })
+            .finally(() => { state.accountsPromise = null; });
+        }
+        return state.accountsPromise;
+      }
+
+      function ensureGroups() {
+        if (state.groupsLoaded) return Promise.resolve();
+        if (!state.groupsPromise) {
+          state.groupsPromise = api('/admin/groups/all?include_inactive=true')
+            .then((groupData) => {
+              state.groups = arrayFrom(groupData);
+              initializeQuickGroups();
+              state.groupsLoaded = true;
+            })
+            .finally(() => { state.groupsPromise = null; });
+        }
+        return state.groupsPromise;
+      }
+
+      async function ensureSharedData() {
+        if (state.accountRefreshPromise) await state.accountRefreshPromise;
+        if (state.proxiesLoaded && state.accountsLoaded) {
+          state.loaded = true;
+          state.coreError = '';
+          return;
+        }
+        if (state.sharedPromise) return state.sharedPromise;
+
+        state.loading = true;
+        state.coreError = '';
+        updateQuickAddButton();
+        state.sharedPromise = Promise.all([ensureProxies(), ensureAccounts()])
+          .then(() => {
+            state.loaded = true;
+            state.coreError = '';
+          })
+          .catch((error) => {
+            state.loaded = state.proxiesLoaded && state.accountsLoaded;
+            state.coreError = error.message || '共享账号数据加载失败';
+            throw error;
+          })
+          .finally(() => {
+            state.loading = false;
+            state.sharedPromise = null;
+            updateQuickAddButton();
+          });
+        return state.sharedPromise;
+      }
+
+      function refreshAccounts() {
+        if (state.accountRefreshPromise) return state.accountRefreshPromise;
+        state.accountRefreshPromise = (async () => {
+          if (state.sharedPromise) await state.sharedPromise;
+          state.loading = true;
+          state.accountsLoaded = false;
           updateQuickAddButton();
-          setStatus('请先登录 Sub2API', true);
-          $('#list').innerHTML = '<div class="loading-state"><strong>尚未检测到登录态</strong>请先登录 Sub2API，再打开本页面</div>';
+          try {
+            await ensureAccounts();
+            state.loaded = state.proxiesLoaded && state.accountsLoaded;
+            state.coreError = '';
+            render();
+          } catch (error) {
+            state.coreError = error.message || '账号列表刷新失败';
+            throw error;
+          } finally {
+            state.loading = false;
+            state.accountRefreshPromise = null;
+            updateQuickAddButton();
+          }
+        })();
+        return state.accountRefreshPromise;
+      }
+
+      function showTabError(tabName, error) {
+        const message = error.message || '加载失败，请稍后重试';
+        if (tabName === 'quick') {
+          $('#quickSelected').textContent = '加载失败';
+          $('#quickCards').innerHTML = '<div class="loading-state"><strong>快速调度加载失败</strong>' + escapeHTML(message) + '</div>';
+          if (!state.groupsLoaded) $('#quickGroups').innerHTML = '<span class="quick-note">分组加载失败</span>';
+        } else if (tabName === 'batch') {
+          $('#list').innerHTML = '<div class="loading-state"><strong>数据加载失败</strong>' + escapeHTML(message) + '</div>';
+          setStatus(message, true);
+        } else {
+          renderProxySummary();
+          renderPoolSummary();
+        }
+      }
+
+      function showLoginRequired(tabName) {
+        state.loaded = false;
+        state.loading = false;
+        state.coreError = '';
+        updateQuickAddButton();
+        const message = '<div class="loading-state"><strong>尚未检测到登录态</strong>请先登录 Sub2API，再打开本页面</div>';
+        if (tabName === 'quick') {
           $('#quickGroups').innerHTML = '<span class="quick-note">登录后加载分组</span>';
           $('#quickSelected').textContent = '未加载';
-          $('#quickCards').innerHTML = '<div class="loading-state"><strong>尚未检测到登录态</strong>请先登录 Sub2API，再打开本页面</div>';
+          $('#quickCards').innerHTML = message;
+        } else if (tabName === 'batch') {
+          setStatus('请先登录 Sub2API', true);
+          $('#list').innerHTML = message;
+        } else {
+          updateSummary();
+          renderProxySummary();
+        }
+      }
+
+      async function loadTabData(tabName) {
+        if (!readAuthToken()) {
+          showLoginRequired(tabName);
           return;
         }
 
-        state.loading = true;
-        updateConnection();
-        setStatus('正在加载…', false, true);
-        $('#list').classList.add('loading');
+        if (tabName === 'quick' && (!state.loaded || !state.groupsLoaded)) {
+          $('#quickSelected').textContent = '正在加载…';
+          $('#quickGroups').innerHTML = '<span class="quick-note">正在加载分组…</span>';
+          $('#quickCards').innerHTML = '<div class="loading-state">正在加载快速调度…</div>';
+        }
+        if (tabName === 'batch') {
+          setStatus('正在加载…', false, true);
+          $('#list').classList.add('loading');
+          if (!state.loaded || !state.groupsLoaded) $('#list').innerHTML = '<div class="loading-state">正在加载代理和账号…</div>';
+        }
+        if (tabName === 'pool') {
+          if (!state.loaded) state.coreError = '';
+          updateSummary();
+          renderProxySummary();
+        }
+
         try {
-          const [proxies, accounts, groupData] = await Promise.all([
-            allPages('/admin/proxies'),
-            allPages('/admin/accounts', { platform: 'openai', type: 'oauth', lite: '1' }),
-            api('/admin/groups/all?include_inactive=true')
-          ]);
-          state.proxies = proxies;
-          state.groups = arrayFrom(groupData);
-          state.accounts = accounts.filter((account) => String(account.platform || '').toLowerCase() === 'openai' && String(account.type || '').toLowerCase() === 'oauth');
-          state.selected = new Set([...state.selected].filter((id) => state.accounts.some((account) => String(account.id) === id)));
-          initializeQuickGroups();
-          state.loaded = true;
+          await ensureSharedData();
+          if (tabName === 'quick' || tabName === 'batch') await ensureGroups();
           render();
-          await Promise.all([testAllProxies(), loadFirstTokenMetrics()]);
-          setStatus('已加载 ' + state.proxies.length + ' 个代理、' + state.groups.length + ' 个分组、' + state.accounts.length + ' 个 OpenAI OAuth 账号');
+          if (tabName === 'pool') await loadPoolMetrics();
+          if (tabName === 'batch') {
+            setStatus('已加载 ' + state.proxies.length + ' 个代理、' + state.groups.length + ' 个分组、' + state.accounts.length + ' 个 OpenAI OAuth 账号');
+          }
         } catch (error) {
-          state.loaded = false;
-          setStatus(error.message || '加载失败', true);
-          $('#list').innerHTML = '<div class="loading-state"><strong>数据加载失败</strong>' + escapeHTML(error.message || '请稍后重试') + '</div>';
-          $('#quickGroups').innerHTML = '<span class="quick-note">分组加载失败</span>';
-          $('#quickSelected').textContent = '加载失败';
-          $('#quickCards').innerHTML = '<div class="loading-state"><strong>快速调度加载失败</strong>' + escapeHTML(error.message || '请稍后重试') + '</div>';
+          showTabError(tabName, error);
         } finally {
-          state.loading = false;
-          $('#list').classList.remove('loading');
+          if (tabName === 'batch') $('#list').classList.remove('loading');
           updateQuickAddButton();
         }
       }
@@ -2165,6 +2623,16 @@
       $('#tabs').addEventListener('click', (event) => {
         const tab = event.target.closest('[data-tab]');
         if (tab) setActiveTab(tab.dataset.tab);
+      });
+
+      $('#proxyP95Comparison').addEventListener('click', (event) => {
+        const button = event.target.closest('[data-first-token-range]');
+        if (!button) return;
+        const rangeDays = Number(button.dataset.firstTokenRange);
+        if (![1, 3, 7].includes(rangeDays)) return;
+        if (state.firstTokenRangeDays === rangeDays && !state.firstToken.error) return;
+        state.firstTokenRangeDays = rangeDays;
+        loadFirstTokenMetrics(rangeDays);
       });
 
       $('#tabs').addEventListener('keydown', (event) => {
@@ -2278,11 +2746,16 @@
         try {
           await api('/admin/accounts/bulk-update', {
             method: 'POST',
-            body: JSON.stringify({ account_ids: ids, proxy_id: isUncategorized ? null : Number(selectedTarget) })
+            body: JSON.stringify({ account_ids: ids, proxy_id: isUncategorized ? 0 : Number(selectedTarget) })
           });
           state.selected.clear();
           $('#target').value = '';
-          await load();
+          try {
+            await refreshAccounts();
+            setStatus('批量移动完成');
+          } catch (error) {
+            setStatus('账号已移动，但列表刷新失败：' + (error.message || '请稍后重试'), true);
+          }
         } catch (error) {
           alert(error.message || '批量移动失败');
         } finally {
@@ -2290,10 +2763,8 @@
         }
       });
 
-      setActiveTab(state.activeTab);
-      updateConnection();
       updateSummary();
-      load();
+      setActiveTab(state.activeTab);
     })();
   </script>
 </body>
